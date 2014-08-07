@@ -115,9 +115,10 @@ public class MainActivity extends ActionBarActivity {
 	private void initList() {
 		// We populate the planets
 
-		planetsList.add(createPlanet("planet", "电灯"));
-		planetsList.add(createPlanet("planet", "电视机"));
-		planetsList.add(createPlanet("planet", "热水器"));
+		planetsList.add(createPlanet("planet", "TV"));
+		planetsList.add(createPlanet("planet", "Water Heater"));
+		planetsList.add(createPlanet("planet", "Light"));
+		planetsList.add(createPlanet("planet", "Light2"));
 
 	}
 
