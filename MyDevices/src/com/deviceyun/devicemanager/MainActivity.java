@@ -1,4 +1,4 @@
-package com.deviceyun.mydevices;
+package com.deviceyun.devicemanager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,7 +18,9 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.deviceyun.devicemanager.R;
+import com.deviceyun.yunos.remote.vo.Device;
 
 public class MainActivity extends ActionBarActivity {
 	List<Map<String, String>> planetsList = new ArrayList<Map<String, String>>();
@@ -81,7 +83,7 @@ public class MainActivity extends ActionBarActivity {
 
 		menu.setHeaderTitle("Options for " + map.get("planet"));
 		menu.add(1, 1, 1, "Details");
-		menu.add(1, 2, 2, "Delete");
+		menu.add(1, 2, 2, "Delete");		
 
 	}
 	
@@ -114,12 +116,12 @@ public class MainActivity extends ActionBarActivity {
 
 	private void initList() {
 		// We populate the planets
-
-		planetsList.add(createPlanet("planet", "TV"));
-		planetsList.add(createPlanet("planet", "Water Heater"));
-		planetsList.add(createPlanet("planet", "Light"));
-		planetsList.add(createPlanet("planet", "Light2"));
-
+		RemoteService svc=RemoteServiceFactory.getRemoteService();
+		List<Device> list = svc.getUserDevices("jackding");
+		
+		for(Device d : list)
+			planetsList.add(createPlanet("planet", d.getLocation()+":"+ d.getName()));
+			
 	}
 
 	private HashMap<String, String> createPlanet(String key, String name) {
