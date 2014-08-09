@@ -111,6 +111,13 @@ public class MainActivity extends ActionBarActivity {
 		if (id == R.id.action_settings) {
 			return true;
 		}
+		else if (id == R.id.action_new) {
+			Toast.makeText(
+					MainActivity.this,
+					"add new device",
+					Toast.LENGTH_SHORT).show();
+			return true;
+		}
 		return super.onOptionsItemSelected(item);
 	}
 

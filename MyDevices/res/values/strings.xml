@@ -7,5 +7,7 @@
     <string name="my_devices">My Devices</string>
     <string name="configure">Configure</string>
     <string name="operate">Operate</string>
+    <string name="add_device">Add</string>
+    <string name="action_new">New</string>
 
 </resources>
