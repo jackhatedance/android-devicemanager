@@ -1,10 +1,12 @@
 package com.deviceyun.devicemanager;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListView;
+import android.widget.TextView;
+
+import com.deviceyun.yunos.remote.vo.Device;
 
 public class DeviceDetailActivity extends ActionBarActivity {
 
@@ -13,7 +15,13 @@ public class DeviceDetailActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_device_detail);
 		
-		ListView lv = (ListView) findViewById(R.id.listViewDevice);
+		TextView name = (TextView) findViewById(R.id.name);		
+		TextView model = (TextView) findViewById(R.id.model);
+		
+		Device dev = (Device)getIntent().getExtras().get("device");
+		
+		name.setText(dev.getName());
+		//model.setText(dev.getModel().getModel());
 
 	}
 
