@@ -1,4 +1,4 @@
-package com.deviceyun.devicemanager;
+package com.deviceyun.devicemanager.remoteservice;
 
 import java.util.Date;
 import java.util.List;

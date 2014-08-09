@@ -1,10 +1,9 @@
 package com.deviceyun.devicemanager;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.ContextMenu;
@@ -14,60 +13,61 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.deviceyun.devicemanager.R;
+import com.deviceyun.devicemanager.devicelist.DeviceListAdapter;
+import com.deviceyun.devicemanager.remoteservice.RemoteService;
+import com.deviceyun.devicemanager.remoteservice.RemoteServiceFactory;
 import com.deviceyun.yunos.remote.vo.Device;
 
 public class MainActivity extends ActionBarActivity {
-	List<Map<String, String>> planetsList = new ArrayList<Map<String, String>>();
-	SimpleAdapter simpleAdpt;
+	
+	ListAdapter  deviceAdapter;
+	private List<Device> devices;
+	
+	private String userId="jackding";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		initList();
-
-		// We get the ListView component from the layout
 		ListView lv = (ListView) findViewById(R.id.listViewDevice);
 
-		// This is a simple adapter that accepts as parameter
-		// Context
-		// Data list
-		// The row layout that is used during the row creation
-		// The keys used to retrieve the data
-		// The View id used to show the data. The key number and the view id
-		// must match
-		simpleAdpt = new SimpleAdapter(this, planetsList,
-				android.R.layout.simple_list_item_1, new String[] { "planet" },
-				new int[] { android.R.id.text1 });
+		// We get the ListView component from the layout
+		TextView name = (TextView) findViewById(R.id.name);
+		TextView model = (TextView) findViewById(R.id.model);
 
-		lv.setAdapter(simpleAdpt);
+		
+		 deviceAdapter = new DeviceListAdapter (this,  android.R.layout.simple_list_item_1, devices);
+			
+		 lv.setAdapter(deviceAdapter);
 
-		// React to user clicks on item
-		lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			// React to user clicks on item
+			lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-			public void onItemClick(AdapterView<?> parentAdapter, View view,
-					int position, long id) {
+				public void onItemClick(AdapterView<?> parentAdapter, View view,
+						int position, long id) {
 
-				// We know the View is a TextView so we can cast it
-				TextView clickedView = (TextView) view;
+					// We know the View is a TextView so we can cast it
+					TextView clickedView = (TextView) view;
 
-				Toast.makeText(
-						MainActivity.this,
-						"Item with id [" + id + "] - Position [" + position
-								+ "] - Planet [" + clickedView.getText() + "]",
-						Toast.LENGTH_SHORT).show();
+					Toast.makeText(
+							MainActivity.this,
+							"Item with id [" + id + "] - Position [" + position
+									+ "] - Planet [" + clickedView.getText() + "]",
+							Toast.LENGTH_SHORT).show();
 
-			}
-		});
+				}
+			});
 
-		// we register for the contextmneu       
-		registerForContextMenu(lv);
+			// we register for the contextmneu       
+			registerForContextMenu(lv);
+		 
+
 	}
 
 	// We want to create a context Menu when the user long click on an item
@@ -79,9 +79,9 @@ public class MainActivity extends ActionBarActivity {
 		AdapterContextMenuInfo aInfo = (AdapterContextMenuInfo) menuInfo;
 
 		// We know that each row in the adapter is a Map
-		HashMap map = (HashMap) simpleAdpt.getItem(aInfo.position);
+		Device device = (Device) deviceAdapter.getItem(aInfo.position);
 
-		menu.setHeaderTitle("Options for " + map.get("planet"));
+		menu.setHeaderTitle("Options for " + device.getName());
 		menu.add(1, 1, 1, "Details");
 		menu.add(1, 2, 2, "Delete");		
 
@@ -91,6 +91,15 @@ public class MainActivity extends ActionBarActivity {
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 	    int itemId = item.getItemId();
+	    AdapterContextMenuInfo aInfo = (AdapterContextMenuInfo)  item.getMenuInfo();
+	    Device device = (Device) deviceAdapter.getItem(aInfo.position);
+	    
+	    if(itemId==1)
+	    {
+	    	Intent myIntent = new Intent(this, DeviceDetailActivity.class);
+	    	myIntent.putExtra("device", device); 
+	    	startActivity(myIntent);
+	    }
 	    // Implements our logic
 	    Toast.makeText(this, "Item id ["+itemId+"]", Toast.LENGTH_SHORT).show();
 	    return true;
@@ -124,10 +133,7 @@ public class MainActivity extends ActionBarActivity {
 	private void initList() {
 		// We populate the planets
 		RemoteService svc=RemoteServiceFactory.getRemoteService();
-		List<Device> list = svc.getUserDevices("jackding");
-		
-		for(Device d : list)
-			planetsList.add(createPlanet("planet", d.getLocation()+":"+ d.getName()));
+		devices = svc.getUserDevices(userId);
 			
 	}
 
