@@ -15,12 +15,32 @@ public class DeviceDetailActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_device_detail);
 		
-		TextView name = (TextView) findViewById(R.id.name);		
+		
+		TextView brand = (TextView) findViewById(R.id.brand);
+		TextView product = (TextView) findViewById(R.id.product);
 		TextView model = (TextView) findViewById(R.id.model);
+		
+		TextView name = (TextView) findViewById(R.id.name);
+		TextView location = (TextView) findViewById(R.id.location);
+		TextView description = (TextView) findViewById(R.id.description);
+		
+		TextView driverVendor = (TextView) findViewById(R.id.driverVendor);
+		TextView driverName = (TextView) findViewById(R.id.driverName);
+		TextView driverVersion = (TextView) findViewById(R.id.driverVersion);
 		
 		Device dev = (Device)getIntent().getExtras().get("device");
 		
+		brand.setText(dev.getHardwareType().getBrand());
+		product.setText(dev.getHardwareType().getProduct());
+		model.setText(dev.getHardwareType().getModel());
+		
+		
 		name.setText(dev.getName());
+		location.setText(dev.getLocation());		
+		description.setText(dev.getDescription());
+		
+		//driverVendor.setText(dev.getDescription());
+		
 		//model.setText(dev.getModel().getModel());
 
 	}

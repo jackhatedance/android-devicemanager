@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="activity_device_detail_name">Name</string>
-    <string name="activity_device_detail_model">Model</string>
     
+    <string name="activity_device_detail_brand">Brand</string>
+    <string name="activity_device_detail_product">Product</string>
+    <string name="activity_device_detail_model">Model</string>
+    <string name="activity_device_detail_name">Name</string>
+    <string name="activity_device_detail_location">Location</string>
+    <string name="activity_device_detail_description">description</string>
+    <string name="activity_device_detail_driver_vendor">Driver Vendor</string>
+    <string name="activity_device_detail_driver_name">Driver Name</string>
+    <string name="activity_device_detail_driver_version">Driver Version</string>
 </resources>

@@ -19,7 +19,7 @@ public class RemoteServiceFactory {
 
 		Gson gson = new GsonBuilder()
 				.setFieldNamingPolicy(
-						FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+						FieldNamingPolicy.IDENTITY)
 				.registerTypeAdapter(Date.class, new DateTypeAdapter())
 				.create();
 
