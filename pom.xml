@@ -24,11 +24,15 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.deviceyun.yunos</groupId>
+			<groupId>com.driverstack.yunos</groupId>
 			<artifactId>remote-api</artifactId>
 			<version>0.1</version>
 		</dependency>
-
+		<dependency>
+			<groupId>com.driverstack.yunos</groupId>
+			<artifactId>driver-api</artifactId>
+			<version>0.1</version>
+		</dependency>
 
 	</dependencies>
 </project>

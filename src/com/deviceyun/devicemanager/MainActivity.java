@@ -21,7 +21,7 @@ import android.widget.Toast;
 import com.deviceyun.devicemanager.devicelist.DeviceListAdapter;
 import com.deviceyun.devicemanager.remoteservice.RemoteService;
 import com.deviceyun.devicemanager.remoteservice.RemoteServiceFactory;
-import com.deviceyun.yunos.remote.vo.Device;
+import com.driverstack.yunos.remote.vo.Device;
 
 public class MainActivity extends ActionBarActivity {
 

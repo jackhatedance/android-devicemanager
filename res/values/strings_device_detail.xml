@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    
-    <string name="activity_device_detail_brand">Brand</string>
-    <string name="activity_device_detail_product">Product</string>
+    <string name="activity_device_detail_class">Class</string>
+    <string name="activity_device_detail_vendor">Vendor</string>    
     <string name="activity_device_detail_model">Model</string>
     <string name="activity_device_detail_name">Name</string>
     <string name="activity_device_detail_location">Location</string>

@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.deviceyun.yunos.remote.vo.Device;
+import com.driverstack.yunos.remote.vo.Device;
 
 public class DeviceListAdapter  extends ArrayAdapter<Device> {
 

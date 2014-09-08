@@ -1,12 +1,10 @@
 package com.deviceyun.devicemanager.remoteservice;
 
 import java.util.Date;
-import java.util.List;
 
 import retrofit.RestAdapter;
 import retrofit.converter.GsonConverter;
 
-import com.deviceyun.yunos.remote.vo.Device;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -15,7 +13,13 @@ import com.google.gson.internal.bind.DateTypeAdapter;
 public class RemoteServiceFactory {
 	private static final String urlApi = "http://api.dev.deviceyun.com/api/1.0/";
 
-	static public RemoteService getRemoteService() {
+	private static RemoteService remoteService =null;
+	public static RemoteService getRemoteService(){
+		if(remoteService==null)
+			remoteService = createRemoteService();
+		return remoteService;
+	}
+	private static RemoteService createRemoteService() {
 
 		Gson gson = new GsonBuilder()
 				.setFieldNamingPolicy(

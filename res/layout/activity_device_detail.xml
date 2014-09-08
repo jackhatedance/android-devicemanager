@@ -13,13 +13,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/activity_device_detail_brand" />
+            android:text="@string/activity_device_detail_vendor" />
 
-        <EditText
-            android:id="@+id/brand"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10" />
+        <Spinner
+            android:id="@+id/vendor"
+            android:layout_width="210dp"
+            android:layout_height="wrap_content" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -31,13 +31,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
-            android:text="@string/activity_device_detail_product" />
+            android:text="@string/activity_device_detail_class" />
 
-        <EditText
-            android:id="@+id/product"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10" />
+         <Spinner
+            android:id="@+id/deviceClass"
+            android:layout_width="210dp"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
     <LinearLayout
@@ -51,11 +50,10 @@
             android:layout_weight="0.25"
             android:text="@string/activity_device_detail_model" />
 
-        <EditText
+         <Spinner
             android:id="@+id/model"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10" />
+            android:layout_width="210dp"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
     <LinearLayout

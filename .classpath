@@ -15,7 +15,8 @@
 	<classpathentry kind="lib" path="libs/okhttp-2.0.0.jar"/>
 	<classpathentry kind="lib" path="libs/okhttp-urlconnection-2.0.0.jar"/>
 	<classpathentry kind="lib" path="libs/okio-1.0.0.jar"/>
-	<classpathentry kind="lib" path="libs/remote-api-0.1.jar"/>
 	<classpathentry kind="lib" path="libs/retrofit-1.6.1.jar"/>
+	<classpathentry kind="lib" path="libs/remote-api-0.1.jar"/>
+	<classpathentry kind="lib" path="libs/driver-api-0.1.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
