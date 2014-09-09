@@ -9,7 +9,9 @@
     <string name="operate">Operate</string>
     <string name="add_device">Add</string>
     <string name="action_new">New</string>
+    <string name="action_accept">Accept</string>
     <string name="device_settings">Device Settings</string>
     <string name="title_activity_device_detail">Device Detail</string>
+    <string name="save">Save</string>
 
 </resources>

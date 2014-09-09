@@ -3,6 +3,7 @@ package com.deviceyun.devicemanager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -11,6 +12,7 @@ import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.deviceyun.devicemanager.remoteservice.RemoteService;
 import com.deviceyun.devicemanager.remoteservice.RemoteServiceFactory;
@@ -25,11 +27,16 @@ public class DeviceDetailActivity extends ActionBarActivity {
 	private Locale currentLocale;
 
 	private Spinner vendor = null;
+	private DropdownList<Vendor> vendorDropdownList = null;
+
 	private Spinner deviceClass = null;
+	private DropdownList<DeviceClass> deviceClassDropdownList = null;
+
 	private Spinner model = null;
-	
-	List<Vendor > vendors=null;
-	List<DeviceClass> deviceClasses=null;
+	private DropdownList<Model> modelDropdownList = null;
+
+	List<Vendor> vendors = null;
+	List<DeviceClass> deviceClasses = null;
 	List<Model> models = null;
 
 	@Override
@@ -51,23 +58,72 @@ public class DeviceDetailActivity extends ActionBarActivity {
 
 		Device dev = (Device) getIntent().getExtras().get("device");
 
-		//load data
+		// load data
 		remoteService = RemoteServiceFactory.getRemoteService();
 		currentLocale = getResources().getConfiguration().locale;
 		vendors = remoteService.getAllVendors(currentLocale.toString());
-		deviceClasses = remoteService.getDeviceClasses(currentLocale.toString());
-		models = remoteService.getModels(dev.getVendorId(), currentLocale.toString());
-				
-		
-		
-		vendor.setAdapter(createVendorDataAdapter());
-		
-		deviceClass.setAdapter(createDeviceClassDataAdapter());
-		
-		model.setAdapter(createModelDataAdapter(dev.getVendorId()));
-		
-		//model.setAdapter(createModelDataAdapter());
-		
+		deviceClasses = remoteService
+				.getDeviceClasses(currentLocale.toString());
+		models = remoteService.getModels(dev.getVendorId(),
+				currentLocale.toString());
+
+		// vendor.setAdapter(createVendorDataAdapter());
+		vendorDropdownList = new DropdownList<Vendor>(this,
+				android.R.layout.simple_spinner_item, vendors, vendor,
+				new ObjectToIdValue<Vendor>() {
+					@Override
+					public String getId(Vendor obj) {
+
+						return obj.getId();
+					}
+
+					@Override
+					public String getName(Vendor obj) {
+
+						return obj.getShortName();
+					}
+				});
+
+		vendorDropdownList.setSelectedObjectById(dev.getVendorId());
+
+		deviceClassDropdownList = new DropdownList<DeviceClass>(this,
+				android.R.layout.simple_spinner_item, deviceClasses,
+				deviceClass, new ObjectToIdValue<DeviceClass>() {
+					@Override
+					public String getId(DeviceClass obj) {
+
+						return obj.getId();
+					}
+
+					@Override
+					public String getName(DeviceClass obj) {
+
+						return obj.getName();
+					}
+				});
+
+		deviceClassDropdownList.setSelectedObjectById(dev.getClassId());
+
+		modelDropdownList = new DropdownList<Model>(this,
+				android.R.layout.simple_spinner_item, models, model,
+				new ObjectToIdValue<Model>() {
+					@Override
+					public String getId(Model obj) {
+
+						return obj.getId();
+					}
+
+					@Override
+					public String getName(Model obj) {
+
+						return obj.getName();
+					}
+				});
+
+		modelDropdownList.setSelectedObjectById(dev.getModelId());
+
+		// model.setAdapter(createModelDataAdapter());
+
 		// vendor.setText(dev.getHardwareType().getVendor());
 
 		// product.setText(dev.getHardwareType().getClass());
@@ -98,67 +154,18 @@ public class DeviceDetailActivity extends ActionBarActivity {
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
 			return true;
+		}else if (id == R.id.action_new) {
+			
+			
+			Toast.makeText(this, "saved!",
+					Toast.LENGTH_SHORT).show();
+			
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
-	}
-
-	private ArrayAdapter<String> createVendorDataAdapter() {
-
 		
-
-		List<String> vendorNames = new ArrayList<String>();
-		for (Vendor v : vendors)
-			vendorNames.add(v.getShortName());
-
-		// Creating adapter for spinner
-		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_spinner_item, vendorNames);
-
-		// Drop down layout style - list view with radio button
-		dataAdapter
-				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-
-		return dataAdapter;
+		
+		 
 	}
-
-	private ArrayAdapter<String> createDeviceClassDataAdapter() {
-		List<DeviceClass> deviceClasses = remoteService.getDeviceClasses(currentLocale
-				.toString());
-
-		List<String> names = new ArrayList<String>();
-		for (DeviceClass devCls : deviceClasses)
-			names.add(devCls.getName());
-
-		// Creating adapter for spinner
-		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_spinner_item, names);
-
-		// Drop down layout style - list view with radio button
-		dataAdapter
-				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-		return dataAdapter;
-	}
-	
-	private ArrayAdapter<String> createModelDataAdapter(String vendorId) {
-		List<Model> models = remoteService.getModels(vendorId,currentLocale
-				.toString());
-
-		List<String> names = new ArrayList<String>();
-		for (Model m : models)
-			names.add(m.getName());
-
-		// Creating adapter for spinner
-		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_spinner_item, names);
-
-		// Drop down layout style - list view with radio button
-		dataAdapter
-				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-		return dataAdapter;
-	}
-
 
 }
