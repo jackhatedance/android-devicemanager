@@ -25,6 +25,8 @@ public interface RemoteService {
 
 	@GET("/vendors/{vendorId}/models")
 	List<com.driverstack.yunos.remote.vo.Model> getModels(
-			@Path("vendorId") String vendorId, @Query("locale") String locale);
+			@Path("vendorId") String vendorId,
+			@Query("deviceClassId") String deviceClassId,
+			@Query("locale") String locale);
 
 }

@@ -64,7 +64,7 @@ public class DeviceDetailActivity extends ActionBarActivity {
 		vendors = remoteService.getAllVendors(currentLocale.toString());
 		deviceClasses = remoteService
 				.getDeviceClasses(currentLocale.toString());
-		models = remoteService.getModels(dev.getVendorId(),
+		models = remoteService.getModels(dev.getVendorId(), dev.getDeviceClassId(),
 				currentLocale.toString());
 
 		// vendor.setAdapter(createVendorDataAdapter());
@@ -102,7 +102,7 @@ public class DeviceDetailActivity extends ActionBarActivity {
 					}
 				});
 
-		deviceClassDropdownList.setSelectedObjectById(dev.getClassId());
+		deviceClassDropdownList.setSelectedObjectById(dev.getDeviceClassId());
 
 		modelDropdownList = new DropdownList<Model>(this,
 				android.R.layout.simple_spinner_item, models, model,
@@ -154,18 +154,18 @@ public class DeviceDetailActivity extends ActionBarActivity {
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
 			return true;
-		}else if (id == R.id.action_new) {
-			
-			
-			Toast.makeText(this, "saved!",
+		} else if (id == R.id.action_accept) {
+
+			Toast.makeText(DeviceDetailActivity.this, "saved!",
 					Toast.LENGTH_SHORT).show();
-			
+
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
-		
-		
-		 
+
 	}
 
+	private void saveBasicInfo() {
+
+	}
 }
