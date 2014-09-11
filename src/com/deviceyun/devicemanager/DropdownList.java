@@ -53,7 +53,8 @@ public class DropdownList<T> {
 	}
 
 	public String getSelectedObjectId() {
-		T t = (T) spinner.getSelectedItem();
+		int pos= spinner.getSelectedItemPosition();
+		T t = objects.get(pos);
 		String id = objectToIdValue.getId(t);
 		return id;
 	}

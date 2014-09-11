@@ -1,15 +1,14 @@
 package com.deviceyun.devicemanager;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +24,12 @@ public class DeviceDetailActivity extends ActionBarActivity {
 
 	private RemoteService remoteService;
 	private Locale currentLocale;
+
+	private Device device;
+
+	private TextView name;
+	private TextView location;
+	private TextView description;
 
 	private Spinner vendor = null;
 	private DropdownList<Vendor> vendorDropdownList = null;
@@ -48,26 +53,25 @@ public class DeviceDetailActivity extends ActionBarActivity {
 		deviceClass = (Spinner) findViewById(R.id.deviceClass);
 		model = (Spinner) findViewById(R.id.model);
 
-		TextView name = (TextView) findViewById(R.id.name);
-		TextView location = (TextView) findViewById(R.id.location);
-		TextView description = (TextView) findViewById(R.id.description);
+		name = (TextView) findViewById(R.id.name);
+		location = (TextView) findViewById(R.id.location);
+		description = (TextView) findViewById(R.id.description);
 
 		TextView driverVendor = (TextView) findViewById(R.id.driverVendor);
 		TextView driverName = (TextView) findViewById(R.id.driverName);
 		TextView driverVersion = (TextView) findViewById(R.id.driverVersion);
 
-		Device dev = (Device) getIntent().getExtras().get("device");
+		device = (Device) getIntent().getExtras().get("device");
 
 		// load data
 		remoteService = RemoteServiceFactory.getRemoteService();
 		currentLocale = getResources().getConfiguration().locale;
 		vendors = remoteService.getAllVendors(currentLocale.toString());
-		deviceClasses = remoteService
-				.getDeviceClasses(currentLocale.toString());
-		models = remoteService.getModels(dev.getVendorId(), dev.getDeviceClassId(),
+		deviceClasses = remoteService.getDeviceClasses(device.getVendorId(),
 				currentLocale.toString());
+		models = remoteService.getModels(device.getVendorId(),
+				device.getDeviceClassId(), currentLocale.toString());
 
-		// vendor.setAdapter(createVendorDataAdapter());
 		vendorDropdownList = new DropdownList<Vendor>(this,
 				android.R.layout.simple_spinner_item, vendors, vendor,
 				new ObjectToIdValue<Vendor>() {
@@ -84,7 +88,21 @@ public class DeviceDetailActivity extends ActionBarActivity {
 					}
 				});
 
-		vendorDropdownList.setSelectedObjectById(dev.getVendorId());
+		vendor.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int position, long id) {
+				refreshDeviceClassDropdownList();
+				refreshModelDropdownList();
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+
+			}
+
+		});
 
 		deviceClassDropdownList = new DropdownList<DeviceClass>(this,
 				android.R.layout.simple_spinner_item, deviceClasses,
@@ -102,9 +120,24 @@ public class DeviceDetailActivity extends ActionBarActivity {
 					}
 				});
 
-		deviceClassDropdownList.setSelectedObjectById(dev.getDeviceClassId());
+		deviceClass
+				.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
-		modelDropdownList = new DropdownList<Model>(this,
+					@Override
+					public void onItemSelected(AdapterView<?> parent,
+							View view, int position, long id) {
+
+						refreshModelDropdownList();
+					}
+
+					@Override
+					public void onNothingSelected(AdapterView<?> parent) {
+
+					}
+
+				});
+
+		modelDropdownList = new DropdownList<Model>(DeviceDetailActivity.this,
 				android.R.layout.simple_spinner_item, models, model,
 				new ObjectToIdValue<Model>() {
 					@Override
@@ -120,8 +153,6 @@ public class DeviceDetailActivity extends ActionBarActivity {
 					}
 				});
 
-		modelDropdownList.setSelectedObjectById(dev.getModelId());
-
 		// model.setAdapter(createModelDataAdapter());
 
 		// vendor.setText(dev.getHardwareType().getVendor());
@@ -129,9 +160,7 @@ public class DeviceDetailActivity extends ActionBarActivity {
 		// product.setText(dev.getHardwareType().getClass());
 		// model.setText(dev.getHardwareType().getModel());
 
-		name.setText(dev.getName());
-		location.setText(dev.getLocation());
-		description.setText(dev.getDescription());
+		updateView();
 
 		// driverVendor.setText(dev.getDescription());
 
@@ -156,16 +185,98 @@ public class DeviceDetailActivity extends ActionBarActivity {
 			return true;
 		} else if (id == R.id.action_accept) {
 
-			Toast.makeText(DeviceDetailActivity.this, "saved!",
-					Toast.LENGTH_SHORT).show();
+			updateModel();
+			try {
+				saveModel();
+				
+				setResult(RESULT_OK);
+				
+				finish();
+			} catch (Exception e) {
+				Toast.makeText(DeviceDetailActivity.this,
+						"saved failed:" + e.getLocalizedMessage(),
+						Toast.LENGTH_SHORT).show();
+			}
 
 			return true;
 		}
+		
 		return super.onOptionsItemSelected(item);
 
 	}
 
-	private void saveBasicInfo() {
+	private void refreshDeviceClassDropdownList() {
 
+		// update model options
+		deviceClasses = remoteService.getDeviceClasses(
+				vendorDropdownList.getSelectedObjectId(),
+				currentLocale.toString());
+
+		deviceClassDropdownList = new DropdownList<DeviceClass>(this,
+				android.R.layout.simple_spinner_item, deviceClasses,
+				deviceClass, new ObjectToIdValue<DeviceClass>() {
+					@Override
+					public String getId(DeviceClass obj) {
+
+						return obj.getId();
+					}
+
+					@Override
+					public String getName(DeviceClass obj) {
+
+						return obj.getName();
+					}
+				});
+	}
+
+	private void refreshModelDropdownList() {
+		Toast.makeText(DeviceDetailActivity.this, "vendor chnaged",
+				Toast.LENGTH_SHORT).show();
+
+		// update model options
+		models = remoteService.getModels(
+				vendorDropdownList.getSelectedObjectId(),
+				deviceClassDropdownList.getSelectedObjectId(),
+				currentLocale.toString());
+
+		modelDropdownList = new DropdownList<Model>(DeviceDetailActivity.this,
+				android.R.layout.simple_spinner_item, models, model,
+				new ObjectToIdValue<Model>() {
+					@Override
+					public String getId(Model obj) {
+
+						return obj.getId();
+					}
+
+					@Override
+					public String getName(Model obj) {
+
+						return obj.getName();
+					}
+				});
+	}
+
+	private void updateView() {
+		vendorDropdownList.setSelectedObjectById(device.getVendorId());
+		deviceClassDropdownList
+				.setSelectedObjectById(device.getDeviceClassId());
+
+		modelDropdownList.setSelectedObjectById(device.getModelId());
+
+		name.setText(device.getName());
+		location.setText(device.getLocation());
+		description.setText(device.getDescription());
+	}
+
+	private void updateModel() {
+		device.setDeviceClassId(deviceClassDropdownList.getSelectedObjectId());
+		device.setModelId(modelDropdownList.getSelectedObjectId());
+		device.setName(name.getText().toString());
+		device.setLocation(location.getText().toString());
+		device.setDescription(description.getText().toString());
+	}
+
+	private void saveModel() {
+		remoteService.updateDevice(device);
 	}
 }
