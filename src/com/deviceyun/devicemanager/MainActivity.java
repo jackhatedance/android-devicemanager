@@ -26,6 +26,8 @@ import com.driverstack.yunos.remote.vo.Device;
 
 public class MainActivity extends ActionBarActivity {
 
+	private static int REQUEST_DEVICE_DETAIL=1;
+	
 	private ListView deviceListView;
 	DeviceListAdapter deviceAdapter;
 	private List<Device> devices;
@@ -54,6 +56,9 @@ public class MainActivity extends ActionBarActivity {
 						// We know the View is a TextView so we can cast it
 						TextView clickedView = (TextView) view;
 
+						
+						Intent intent = new Intent(Constants.ACTION_OPERATE);
+						//intent.setType(type)
 						Toast.makeText(
 								MainActivity.this,
 								"Item with id [" + id + "] - Position ["
@@ -95,9 +100,10 @@ public class MainActivity extends ActionBarActivity {
 		Device device = (Device) deviceAdapter.getItem(aInfo.position);
 
 		if (itemId == 1) {
+			
 			Intent myIntent = new Intent(this, DeviceDetailActivity.class);
 			myIntent.putExtra("device", device);
-			startActivityForResult(myIntent, 1);
+			startActivityForResult(myIntent, REQUEST_DEVICE_DETAIL);
 		}
 		// Implements our logic
 		Toast.makeText(this, "Item id [" + itemId + "]", Toast.LENGTH_SHORT)
@@ -110,7 +116,7 @@ public class MainActivity extends ActionBarActivity {
 
 		super.onActivityResult(requestCode, resultCode, data);
 
-		if (requestCode == 1) {
+		if (requestCode == REQUEST_DEVICE_DETAIL) {
 
 			if (resultCode == RESULT_OK) {
 				loadDeviceListModel();

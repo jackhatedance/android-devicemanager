@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.deviceyun.devicemanager.remoteservice.RemoteService;
 import com.deviceyun.devicemanager.remoteservice.RemoteServiceFactory;
+import com.deviceyun.devicemanager.ui.DropdownList;
 import com.deviceyun.devicemanager.utils.Utils;
 import com.driverstack.yunos.remote.vo.Device;
 import com.driverstack.yunos.remote.vo.DeviceClass;
@@ -48,7 +49,7 @@ public class DeviceDetailActivity extends ActionBarActivity {
 	private DropdownList<Driver> driverDropdownList = null;
 
 	private Button buttonConfigure;
-	
+
 	List<Vendor> vendors = null;
 	List<DeviceClass> deviceClasses = null;
 	List<Model> models = null;
@@ -193,22 +194,22 @@ public class DeviceDetailActivity extends ActionBarActivity {
 						return obj.toString();
 					}
 				});
-		
-		
+
 		buttonConfigure = (Button) findViewById(R.id.buttonConfigureDriver);
 		buttonConfigure.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-				Intent myIntent = new Intent(DeviceDetailActivity.this, DeviceConfigurationActivity.class);
-				
+				Intent myIntent = new Intent(DeviceDetailActivity.this,
+						DeviceConfigurationActivity.class);
+
 				updateModel();
-				
+
 				myIntent.putExtra("device", device);
-				startActivityForResult(myIntent, 1);				
+				startActivityForResult(myIntent, 1);
 			}
 		});
-		
+
 		// model.setAdapter(createModelDataAdapter());
 
 		// vendor.setText(dev.getHardwareType().getVendor());
@@ -254,6 +255,12 @@ public class DeviceDetailActivity extends ActionBarActivity {
 						Toast.LENGTH_SHORT).show();
 			}
 
+			return true;
+		} else if (id == R.id.action_cancel) {
+
+			setResult(RESULT_CANCELED);
+
+			finish();
 			return true;
 		}
 
@@ -345,9 +352,9 @@ public class DeviceDetailActivity extends ActionBarActivity {
 		name.setText(device.getName());
 		location.setText(device.getLocation());
 		description.setText(device.getDescription());
-		if(device.getDriverId()!=null)
+		if (device.getDriverId() != null)
 			driverDropdownList.setSelectedObjectById(device.getDriverId());
-		
+
 	}
 
 	private void updateModel() {

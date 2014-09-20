@@ -1,9 +1,11 @@
-package com.deviceyun.devicemanager;
+package com.deviceyun.devicemanager.ui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.deviceyun.devicemanager.ObjectToIdValue;
 
 import android.content.Context;
 import android.widget.ArrayAdapter;

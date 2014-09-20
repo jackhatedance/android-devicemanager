@@ -17,11 +17,15 @@ public interface RemoteService {
 			@Query("userId") String userId);
 
 	@POST("/devices/update")
-	public boolean updateDevice(@Body Device device);
+	boolean updateDevice(@Body Device device);
 
 	@GET("/devices/{deviceId}/configuration")
 	List<com.driverstack.yunos.remote.vo.ConfigurationItem> getDeviceConfiguration(
 			@Path("deviceId") String deviceId);
+	
+	@POST("/devices/{deviceId}/configuration")
+	boolean updateDeviceConfiguration(
+			@Path("deviceId") String deviceId,@Body List<com.driverstack.yunos.remote.vo.ConfigurationItem> items);
 
 	@GET("/vendors")
 	List<com.driverstack.yunos.remote.vo.Vendor> getAllVendors(

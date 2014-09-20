@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.deviceyun.devicemanager.remoteservice.RemoteService;
 import com.deviceyun.devicemanager.remoteservice.RemoteServiceFactory;
@@ -28,7 +29,12 @@ public class DeviceConfigurationActivity extends ActionBarActivity {
 
 	private RemoteService remoteService;
 	private Device device;
+	
+	private List<ConfigurationItem> deviceConfigurationItems;
+	private Map<String, ConfigurationItem> deviceConfigurationMap;
 
+	private Map<String, View> fieldMap;
+	
 	private Locale currentLocale;
 
 	@Override
@@ -45,12 +51,15 @@ public class DeviceConfigurationActivity extends ActionBarActivity {
 				.getDriverConfigurationDefinitionItems(device.getDriverId(),
 						currentLocale.toString());
 
-		List<ConfigurationItem> deviceConfigurationItems = remoteService
+		deviceConfigurationItems = remoteService
 				.getDeviceConfiguration(device.getId());
-		Map<String, ConfigurationItem> deviceConfigurationMap = new HashMap<String, ConfigurationItem>();
+		  deviceConfigurationMap = new HashMap<String, ConfigurationItem>();
 		for (ConfigurationItem ci : deviceConfigurationItems)
 			deviceConfigurationMap.put(ci.getName(), ci);
 
+		
+		fieldMap= new HashMap<String, View>();
+		
 		// add LInearLayout
 		myLinearLayout = (LinearLayout) findViewById(R.id.linearLayout1);
 
@@ -80,6 +89,28 @@ public class DeviceConfigurationActivity extends ActionBarActivity {
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
 			return true;
+		}else if (id == R.id.action_accept) {
+
+			updateModel();
+			try {
+				saveModel();
+
+				setResult(RESULT_OK);
+
+				finish();
+			} catch (Exception e) {
+				Toast.makeText(DeviceConfigurationActivity.this,
+						"saved failed:" + e.getLocalizedMessage(),
+						Toast.LENGTH_SHORT).show();
+			}
+
+			return true;
+		} else if (id == R.id.action_cancel) {
+
+			setResult(RESULT_CANCELED);
+
+			finish();
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -108,8 +139,20 @@ public class DeviceConfigurationActivity extends ActionBarActivity {
 		// add the textView and the Button to LinearLayout
 		container.addView(label);
 		container.addView(field);
+		
+		fieldMap.put(definitionItem.getName(), field);
 
 		return container;
 	}
+	private void updateModel() {
+		for(ConfigurationItem ci: deviceConfigurationItems)
+		{
+			EditText editText = (EditText)fieldMap.get(ci.getName());
+			ci.setValue(editText.getText().toString());
+		}
+	}
 
+	private void saveModel() {
+		remoteService.updateDeviceConfiguration(device.getId(),deviceConfigurationItems);
+	}
 }
