@@ -19,6 +19,7 @@ public class RemoteServiceFactory {
 			remoteService = createRemoteService();
 		return remoteService;
 	}
+	
 	private static RemoteService createRemoteService() {
 
 		Gson gson = new GsonBuilder()

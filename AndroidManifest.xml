@@ -36,6 +36,10 @@
             android:name=".DeviceDetailActivity"
             android:label="@string/title_activity_device_detail" >
         </activity>
+        <activity
+            android:name=".DeviceConfigurationActivity"
+            android:label="@string/title_activity_device_configuration" >
+        </activity>
     </application>
 
 </manifest>

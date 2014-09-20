@@ -3,20 +3,24 @@ package com.deviceyun.devicemanager;
 import java.util.List;
 import java.util.Locale;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.deviceyun.devicemanager.remoteservice.RemoteService;
 import com.deviceyun.devicemanager.remoteservice.RemoteServiceFactory;
+import com.deviceyun.devicemanager.utils.Utils;
 import com.driverstack.yunos.remote.vo.Device;
 import com.driverstack.yunos.remote.vo.DeviceClass;
+import com.driverstack.yunos.remote.vo.Driver;
 import com.driverstack.yunos.remote.vo.Model;
 import com.driverstack.yunos.remote.vo.Vendor;
 
@@ -40,9 +44,15 @@ public class DeviceDetailActivity extends ActionBarActivity {
 	private Spinner model = null;
 	private DropdownList<Model> modelDropdownList = null;
 
+	private Spinner driver = null;
+	private DropdownList<Driver> driverDropdownList = null;
+
+	private Button buttonConfigure;
+	
 	List<Vendor> vendors = null;
 	List<DeviceClass> deviceClasses = null;
 	List<Model> models = null;
+	List<Driver> drivers = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -57,20 +67,19 @@ public class DeviceDetailActivity extends ActionBarActivity {
 		location = (TextView) findViewById(R.id.location);
 		description = (TextView) findViewById(R.id.description);
 
-		TextView driverVendor = (TextView) findViewById(R.id.driverVendor);
-		TextView driverName = (TextView) findViewById(R.id.driverName);
-		TextView driverVersion = (TextView) findViewById(R.id.driverVersion);
+		driver = (Spinner) findViewById(R.id.spinnerDriver);
 
 		device = (Device) getIntent().getExtras().get("device");
 
 		// load data
 		remoteService = RemoteServiceFactory.getRemoteService();
-		currentLocale = getResources().getConfiguration().locale;
+		currentLocale = Utils.getLocale(this);
 		vendors = remoteService.getAllVendors(currentLocale.toString());
 		deviceClasses = remoteService.getDeviceClasses(device.getVendorId(),
 				currentLocale.toString());
 		models = remoteService.getModels(device.getVendorId(),
 				device.getDeviceClassId(), currentLocale.toString());
+		drivers = remoteService.getDrivers(device.getModelId());
 
 		vendorDropdownList = new DropdownList<Vendor>(this,
 				android.R.layout.simple_spinner_item, vendors, vendor,
@@ -153,6 +162,53 @@ public class DeviceDetailActivity extends ActionBarActivity {
 					}
 				});
 
+		model.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int position, long id) {
+
+				refreshDriverDropdownList();
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+
+			}
+
+		});
+		driverDropdownList = new DropdownList<Driver>(
+				DeviceDetailActivity.this,
+				android.R.layout.simple_spinner_item, drivers, driver,
+				new ObjectToIdValue<Driver>() {
+					@Override
+					public String getId(Driver obj) {
+
+						return obj.getId();
+					}
+
+					@Override
+					public String getName(Driver obj) {
+
+						return obj.toString();
+					}
+				});
+		
+		
+		buttonConfigure = (Button) findViewById(R.id.buttonConfigureDriver);
+		buttonConfigure.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent myIntent = new Intent(DeviceDetailActivity.this, DeviceConfigurationActivity.class);
+				
+				updateModel();
+				
+				myIntent.putExtra("device", device);
+				startActivityForResult(myIntent, 1);				
+			}
+		});
+		
 		// model.setAdapter(createModelDataAdapter());
 
 		// vendor.setText(dev.getHardwareType().getVendor());
@@ -188,9 +244,9 @@ public class DeviceDetailActivity extends ActionBarActivity {
 			updateModel();
 			try {
 				saveModel();
-				
+
 				setResult(RESULT_OK);
-				
+
 				finish();
 			} catch (Exception e) {
 				Toast.makeText(DeviceDetailActivity.this,
@@ -200,7 +256,7 @@ public class DeviceDetailActivity extends ActionBarActivity {
 
 			return true;
 		}
-		
+
 		return super.onOptionsItemSelected(item);
 
 	}
@@ -256,6 +312,29 @@ public class DeviceDetailActivity extends ActionBarActivity {
 				});
 	}
 
+	private void refreshDriverDropdownList() {
+		// update driver options
+		drivers = remoteService.getDrivers(modelDropdownList
+				.getSelectedObjectId());
+
+		driverDropdownList = new DropdownList<Driver>(
+				DeviceDetailActivity.this,
+				android.R.layout.simple_spinner_item, drivers, driver,
+				new ObjectToIdValue<Driver>() {
+					@Override
+					public String getId(Driver obj) {
+
+						return obj.getId();
+					}
+
+					@Override
+					public String getName(Driver obj) {
+
+						return obj.toString();
+					}
+				});
+	}
+
 	private void updateView() {
 		vendorDropdownList.setSelectedObjectById(device.getVendorId());
 		deviceClassDropdownList
@@ -266,6 +345,9 @@ public class DeviceDetailActivity extends ActionBarActivity {
 		name.setText(device.getName());
 		location.setText(device.getLocation());
 		description.setText(device.getDescription());
+		if(device.getDriverId()!=null)
+			driverDropdownList.setSelectedObjectById(device.getDriverId());
+		
 	}
 
 	private void updateModel() {
@@ -274,6 +356,7 @@ public class DeviceDetailActivity extends ActionBarActivity {
 		device.setName(name.getText().toString());
 		device.setLocation(location.getText().toString());
 		device.setDescription(description.getText().toString());
+		device.setDriverId(driverDropdownList.getSelectedObjectId());
 	}
 
 	private void saveModel() {

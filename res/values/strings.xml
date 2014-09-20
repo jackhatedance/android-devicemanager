@@ -13,5 +13,6 @@
     <string name="device_settings">Device Settings</string>
     <string name="title_activity_device_detail">Device Detail</string>
     <string name="save">Save</string>
+    <string name="title_activity_device_configuration">DeviceConfigurationActivity</string>
 
 </resources>
