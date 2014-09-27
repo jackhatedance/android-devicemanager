@@ -22,6 +22,7 @@ import com.deviceyun.devicemanager.utils.Utils;
 import com.driverstack.yunos.remote.vo.Device;
 import com.driverstack.yunos.remote.vo.DeviceClass;
 import com.driverstack.yunos.remote.vo.Driver;
+import com.driverstack.yunos.remote.vo.FunctionalDevice;
 import com.driverstack.yunos.remote.vo.Model;
 import com.driverstack.yunos.remote.vo.Vendor;
 
@@ -48,12 +49,16 @@ public class DeviceDetailActivity extends ActionBarActivity {
 	private Spinner driver = null;
 	private DropdownList<Driver> driverDropdownList = null;
 
+	private Spinner defaultFunctionalDevice = null;
+	private DropdownList<FunctionalDevice> functionalDeviceDropdownList = null;
+
 	private Button buttonConfigure;
 
 	List<Vendor> vendors = null;
 	List<DeviceClass> deviceClasses = null;
 	List<Model> models = null;
 	List<Driver> drivers = null;
+	List<FunctionalDevice> functionalDevices = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +74,7 @@ public class DeviceDetailActivity extends ActionBarActivity {
 		description = (TextView) findViewById(R.id.description);
 
 		driver = (Spinner) findViewById(R.id.spinnerDriver);
+		defaultFunctionalDevice = (Spinner) findViewById(R.id.spinnerDefaultFunctionalDevice);
 
 		device = (Device) getIntent().getExtras().get("device");
 
@@ -81,6 +87,8 @@ public class DeviceDetailActivity extends ActionBarActivity {
 		models = remoteService.getModels(device.getVendorId(),
 				device.getDeviceClassId(), currentLocale.toString());
 		drivers = remoteService.getDrivers(device.getModelId());
+		functionalDevices = remoteService.getFunctionalDevices(device.getId(),
+				currentLocale.toString());
 
 		vendorDropdownList = new DropdownList<Vendor>(this,
 				android.R.layout.simple_spinner_item, vendors, vendor,
@@ -210,18 +218,28 @@ public class DeviceDetailActivity extends ActionBarActivity {
 			}
 		});
 
-		// model.setAdapter(createModelDataAdapter());
+		functionalDeviceDropdownList = new DropdownList<FunctionalDevice>(
+				DeviceDetailActivity.this,
+				android.R.layout.simple_spinner_item, functionalDevices,
+				defaultFunctionalDevice,
+				new ObjectToIdValue<FunctionalDevice>() {
+					@Override
+					public String getId(FunctionalDevice obj) {
 
-		// vendor.setText(dev.getHardwareType().getVendor());
+						return String.valueOf(obj.getIndex());
+					}
 
-		// product.setText(dev.getHardwareType().getClass());
-		// model.setText(dev.getHardwareType().getModel());
+					@Override
+					public String getName(FunctionalDevice obj) {
+
+						String s = String.format("%s:%s",
+								obj.getOrganizationName(),
+								obj.getArtifactName());
+						return s;
+					}
+				});
 
 		updateView();
-
-		// driverVendor.setText(dev.getDescription());
-
-		// model.setText(dev.getModel().getModel());
 
 	}
 
@@ -355,6 +373,9 @@ public class DeviceDetailActivity extends ActionBarActivity {
 		if (device.getDriverId() != null)
 			driverDropdownList.setSelectedObjectById(device.getDriverId());
 
+		// spinnerDefaultFunctionalDevice
+		functionalDeviceDropdownList.setSelectedObjectById(String
+				.valueOf(device.getDefaultFunctionalDeviceIndex()));
 	}
 
 	private void updateModel() {
@@ -364,6 +385,8 @@ public class DeviceDetailActivity extends ActionBarActivity {
 		device.setLocation(location.getText().toString());
 		device.setDescription(description.getText().toString());
 		device.setDriverId(driverDropdownList.getSelectedObjectId());
+		device.setDefaultFunctionalDeviceIndex(Integer
+				.valueOf(functionalDeviceDropdownList.getSelectedObjectId()));
 	}
 
 	private void saveModel() {

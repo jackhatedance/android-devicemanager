@@ -9,7 +9,7 @@
     <string name="activity_device_detail_location">Location</string>
     <string name="activity_device_detail_description">description</string>
     <string name="activity_device_detail_driver">Driver</string>
-    <string name="activity_device_detail_driver_vendor">Driver Vendor</string>
-    <string name="activity_device_detail_driver_name">Driver Name</string>
-    <string name="activity_device_detail_driver_version">Driver Version</string>
+    <string name="activity_device_detail_default_functional_device">Default Functional Device</string>
+    
+    
 </resources>

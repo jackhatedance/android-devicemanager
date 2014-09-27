@@ -22,16 +22,20 @@ public interface RemoteService {
 	@GET("/devices/{deviceId}/configuration")
 	List<com.driverstack.yunos.remote.vo.ConfigurationItem> getDeviceConfiguration(
 			@Path("deviceId") String deviceId);
-	
+
 	@POST("/devices/{deviceId}/configuration")
-	boolean updateDeviceConfiguration(
-			@Path("deviceId") String deviceId,@Body List<com.driverstack.yunos.remote.vo.ConfigurationItem> items);
+	boolean updateDeviceConfiguration(@Path("deviceId") String deviceId,
+			@Body List<com.driverstack.yunos.remote.vo.ConfigurationItem> items);
+
+	@GET("/devices/{deviceId}/functionalDevices")
+	List<com.driverstack.yunos.remote.vo.FunctionalDevice> getFunctionalDevices(
+			@Path("deviceId") String deviceId, @Query("locale") String locale);
 
 	@GET("/vendors")
 	List<com.driverstack.yunos.remote.vo.Vendor> getAllVendors(
 			@Query("locale") String locale);
 
-	@GET("/device_classes")
+	@GET("/deviceClasses")
 	List<com.driverstack.yunos.remote.vo.DeviceClass> getDeviceClasses(
 			@Query("vendorId") String vendorId, @Query("locale") String locale);
 
@@ -48,5 +52,5 @@ public interface RemoteService {
 	@GET("/drivers/{driverId}/configrationItems")
 	List<com.driverstack.yunos.remote.vo.DriverConfigurationDefinitionItem> getDriverConfigurationDefinitionItems(
 			@Path("driverId") String driverId, @Query("locale") String locale);
-	
+
 }
