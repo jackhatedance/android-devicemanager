@@ -1,9 +1,11 @@
 package com.deviceyun.devicemanager;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.ContextMenu;
@@ -13,8 +15,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,12 +22,17 @@ import android.widget.Toast;
 import com.deviceyun.devicemanager.devicelist.DeviceListAdapter;
 import com.deviceyun.devicemanager.remoteservice.RemoteService;
 import com.deviceyun.devicemanager.remoteservice.RemoteServiceFactory;
+import com.deviceyun.devicemanager.utils.Utils;
 import com.driverstack.yunos.remote.vo.Device;
+import com.driverstack.yunos.remote.vo.FunctionalDevice;
 
 public class MainActivity extends ActionBarActivity {
 
-	private static int REQUEST_DEVICE_DETAIL=1;
-	
+	private RemoteService remoteService;
+	private Locale currentLocale;
+
+	private static int REQUEST_DEVICE_DETAIL = 1;
+
 	private ListView deviceListView;
 	DeviceListAdapter deviceAdapter;
 	private List<Device> devices;
@@ -38,7 +43,10 @@ public class MainActivity extends ActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		loadDeviceListModel();
+
+		remoteService = RemoteServiceFactory.getRemoteService();
+		currentLocale = Utils.getLocale(this);
+		devices = remoteService.getUserDevices(userId);
 
 		deviceListView = (ListView) findViewById(R.id.listViewDevice);
 		deviceAdapter = new DeviceListAdapter(this,
@@ -56,15 +64,32 @@ public class MainActivity extends ActionBarActivity {
 						// We know the View is a TextView so we can cast it
 						TextView clickedView = (TextView) view;
 
-						
 						Intent intent = new Intent(Constants.ACTION_OPERATE);
-						//intent.setType(type)
-						Toast.makeText(
-								MainActivity.this,
-								"Item with id [" + id + "] - Position ["
-										+ position + "] - Planet ["
-										+ clickedView.getText() + "]",
-								Toast.LENGTH_SHORT).show();
+						// intent.setType(type)
+						Device device = devices.get(position);
+						List<FunctionalDevice> functionalDevices = remoteService
+								.getFunctionalDevices(device.getId(),
+										currentLocale.toString());
+						FunctionalDevice functionalDevice = functionalDevices
+								.get(device.getDefaultFunctionalDeviceIndex());
+						String type = String.format("%s/%s",
+								functionalDevice.getOrganizationId(),
+								functionalDevice.getArtifactId());
+
+						intent.setType(type);
+
+						PackageManager packageManager = getPackageManager();
+						List<ResolveInfo> activities = packageManager
+								.queryIntentActivities(intent, 0);
+						boolean isIntentSafe = activities.size() > 0;
+
+						if (isIntentSafe)
+							startActivity(intent);
+						else
+							Toast.makeText(
+									MainActivity.this,
+									"No available appications for this device, please download some applications from the store.",
+									Toast.LENGTH_SHORT).show();
 
 					}
 				});
@@ -100,7 +125,7 @@ public class MainActivity extends ActionBarActivity {
 		Device device = (Device) deviceAdapter.getItem(aInfo.position);
 
 		if (itemId == 1) {
-			
+
 			Intent myIntent = new Intent(this, DeviceDetailActivity.class);
 			myIntent.putExtra("device", device);
 			startActivityForResult(myIntent, REQUEST_DEVICE_DETAIL);
@@ -119,7 +144,7 @@ public class MainActivity extends ActionBarActivity {
 		if (requestCode == REQUEST_DEVICE_DETAIL) {
 
 			if (resultCode == RESULT_OK) {
-				loadDeviceListModel();
+				devices = remoteService.getUserDevices(userId);
 				updateDeviceListView();
 			}
 		}
@@ -148,17 +173,10 @@ public class MainActivity extends ActionBarActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	private void loadDeviceListModel() {
-		// We populate the planets
-		RemoteService svc = RemoteServiceFactory.getRemoteService();
-		devices = svc.getUserDevices(userId);
-
-	}
-
 	private void updateDeviceListView() {
 		deviceAdapter.clear();
-		
-		for(Device d : devices)
+
+		for (Device d : devices)
 			deviceAdapter.add(d);
 
 		deviceAdapter.notifyDataSetChanged();

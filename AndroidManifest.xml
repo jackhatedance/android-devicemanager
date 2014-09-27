@@ -40,6 +40,15 @@
             android:name=".DeviceConfigurationActivity"
             android:label="@string/title_activity_device_configuration" >
         </activity>
+        <activity
+            android:name=".IrTransmitterActivity"
+            android:label="@string/title_activity_ir_transmitter" >
+            <intent-filter>
+                <action android:name="com.driverstack.devicemanager.intent.action.OPERATE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="generic/IrTransmitter" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
