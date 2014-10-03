@@ -22,6 +22,7 @@ import com.deviceyun.devicemanager.remoteservice.RemoteServiceFactory;
 import com.deviceyun.devicemanager.ui.DropdownList;
 import com.deviceyun.devicemanager.ui.EditTextValueField;
 import com.deviceyun.devicemanager.ui.DropdownListValueField;
+import com.deviceyun.devicemanager.ui.ObjectToIdValue;
 import com.deviceyun.devicemanager.ui.ValueField;
 import com.deviceyun.devicemanager.utils.Utils;
 import com.driverstack.yunos.driver.config.ConfigurationItemPrimaryType;

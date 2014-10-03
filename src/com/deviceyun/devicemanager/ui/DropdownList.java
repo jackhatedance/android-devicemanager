@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.deviceyun.devicemanager.ObjectToIdValue;
-
 import android.content.Context;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;

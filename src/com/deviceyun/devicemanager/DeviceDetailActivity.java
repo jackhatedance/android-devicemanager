@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.deviceyun.devicemanager.remoteservice.RemoteService;
 import com.deviceyun.devicemanager.remoteservice.RemoteServiceFactory;
 import com.deviceyun.devicemanager.ui.DropdownList;
+import com.deviceyun.devicemanager.ui.ObjectToIdValue;
 import com.deviceyun.devicemanager.utils.Utils;
 import com.driverstack.yunos.remote.vo.Device;
 import com.driverstack.yunos.remote.vo.DeviceClass;

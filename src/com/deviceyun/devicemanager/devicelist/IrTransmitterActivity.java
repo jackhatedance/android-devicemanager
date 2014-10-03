@@ -1,4 +1,9 @@
-package com.deviceyun.devicemanager;
+package com.deviceyun.devicemanager.devicelist;
+
+import com.deviceyun.devicemanager.R;
+import com.deviceyun.devicemanager.R.id;
+import com.deviceyun.devicemanager.R.layout;
+import com.deviceyun.devicemanager.R.menu;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;

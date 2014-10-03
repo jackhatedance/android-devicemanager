@@ -32,7 +32,8 @@ public class MainActivity extends ActionBarActivity {
 	private Locale currentLocale;
 
 	private static int REQUEST_DEVICE_DETAIL = 1;
-
+	
+	
 	private ListView deviceListView;
 	DeviceListAdapter deviceAdapter;
 	private List<Device> devices;
@@ -77,6 +78,7 @@ public class MainActivity extends ActionBarActivity {
 								functionalDevice.getArtifactId());
 
 						intent.setType(type);
+						intent.putExtra("functionalDevice", functionalDevice);
 
 						PackageManager packageManager = getPackageManager();
 						List<ResolveInfo> activities = packageManager
