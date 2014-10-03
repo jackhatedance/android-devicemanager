@@ -28,7 +28,7 @@ public class DropdownList<T> {
 		this.objectToIdValue = objectToIdValue;
 
 		for (T t : objects) {
-			
+
 			String id = objectToIdValue.getId(t);
 			String name = objectToIdValue.getName(t);
 			names.add(name);
@@ -44,7 +44,7 @@ public class DropdownList<T> {
 		// Drop down layout style - list view with radio button
 		dataAdapter
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		
+
 		spinner.setAdapter(dataAdapter);
 	}
 
@@ -55,9 +55,13 @@ public class DropdownList<T> {
 	}
 
 	public String getSelectedObjectId() {
-		int pos= spinner.getSelectedItemPosition();
-		T t = objects.get(pos);
-		String id = objectToIdValue.getId(t);
-		return id;
+		int pos = spinner.getSelectedItemPosition();
+
+		if (pos != android.widget.AdapterView.INVALID_POSITION) {
+			T t = objects.get(pos);
+			String id = objectToIdValue.getId(t);
+			return id;
+		} else
+			return null;
 	}
 }

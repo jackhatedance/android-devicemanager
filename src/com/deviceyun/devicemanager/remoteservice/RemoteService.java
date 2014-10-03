@@ -23,13 +23,23 @@ public interface RemoteService {
 	List<com.driverstack.yunos.remote.vo.ConfigurationItem> getDeviceConfiguration(
 			@Path("deviceId") String deviceId);
 
+	@GET("/devices/{deviceId}/initialConfiguration")
+	List<com.driverstack.yunos.remote.vo.ConfigurationItem> getDeviceInitialConfiguration(
+			@Path("deviceId") String deviceId,
+			@Query("driverId") String driverId);
+
 	@POST("/devices/{deviceId}/configuration")
 	boolean updateDeviceConfiguration(@Path("deviceId") String deviceId,
 			@Body List<com.driverstack.yunos.remote.vo.ConfigurationItem> items);
 
-	@GET("/devices/{deviceId}/functionalDevices")
+	@GET("/functionalDevices/by-device")
 	List<com.driverstack.yunos.remote.vo.FunctionalDevice> getFunctionalDevices(
-			@Path("deviceId") String deviceId, @Query("locale") String locale);
+			@Query("deviceId") String deviceId, @Query("locale") String locale);
+
+	@GET("/functionalDevices/by-user")
+	List<com.driverstack.yunos.remote.vo.FunctionalDevice> getFunctionalDevices(
+			@Query("userId") String userId,
+			@Query("className") String className, @Query("locale") String locale);
 
 	@GET("/vendors")
 	List<com.driverstack.yunos.remote.vo.Vendor> getAllVendors(

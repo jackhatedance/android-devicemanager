@@ -37,7 +37,7 @@ public class MainActivity extends ActionBarActivity {
 	DeviceListAdapter deviceAdapter;
 	private List<Device> devices;
 
-	private String userId = "jackding";
+	public static String userId = "jackding";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

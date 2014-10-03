@@ -385,8 +385,12 @@ public class DeviceDetailActivity extends ActionBarActivity {
 		device.setLocation(location.getText().toString());
 		device.setDescription(description.getText().toString());
 		device.setDriverId(driverDropdownList.getSelectedObjectId());
-		device.setDefaultFunctionalDeviceIndex(Integer
-				.valueOf(functionalDeviceDropdownList.getSelectedObjectId()));
+
+		String selFuntionalDeviceId = functionalDeviceDropdownList
+				.getSelectedObjectId();
+		if (selFuntionalDeviceId != null)
+			device.setDefaultFunctionalDeviceIndex(Integer
+					.valueOf(functionalDeviceDropdownList.getSelectedObjectId()));
 	}
 
 	private void saveModel() {
