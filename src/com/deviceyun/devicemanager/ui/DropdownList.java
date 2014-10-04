@@ -46,6 +46,15 @@ public class DropdownList<T> {
 		spinner.setAdapter(dataAdapter);
 	}
 
+	public boolean containsId(String id) {
+		return map.containsKey(id);
+	}
+
+	/**
+	 * 
+	 * @param id
+	 * @return false if no such ID
+	 */
 	public void setSelectedObjectById(String id) {
 		T t = map.get(id);
 		int index = objects.indexOf(t);

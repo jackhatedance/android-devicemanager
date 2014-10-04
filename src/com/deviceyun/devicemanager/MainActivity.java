@@ -32,8 +32,7 @@ public class MainActivity extends ActionBarActivity {
 	private Locale currentLocale;
 
 	private static int REQUEST_DEVICE_DETAIL = 1;
-	
-	
+
 	private ListView deviceListView;
 	DeviceListAdapter deviceAdapter;
 	private List<Device> devices;
@@ -127,15 +126,18 @@ public class MainActivity extends ActionBarActivity {
 		Device device = (Device) deviceAdapter.getItem(aInfo.position);
 
 		if (itemId == 1) {
-
-			Intent myIntent = new Intent(this, DeviceDetailActivity.class);
-			myIntent.putExtra("device", device);
-			startActivityForResult(myIntent, REQUEST_DEVICE_DETAIL);
+			startDeviceDetailAcitivity(device);
 		}
 		// Implements our logic
 		Toast.makeText(this, "Item id [" + itemId + "]", Toast.LENGTH_SHORT)
 				.show();
 		return true;
+	}
+
+	private void startDeviceDetailAcitivity(Device device) {
+		Intent myIntent = new Intent(this, DeviceDetailActivity.class);
+		myIntent.putExtra("device", device);
+		startActivityForResult(myIntent, REQUEST_DEVICE_DETAIL);
 	}
 
 	@Override
@@ -144,12 +146,13 @@ public class MainActivity extends ActionBarActivity {
 		super.onActivityResult(requestCode, resultCode, data);
 
 		if (requestCode == REQUEST_DEVICE_DETAIL) {
-
 			if (resultCode == RESULT_OK) {
 				devices = remoteService.getUserDevices(userId);
+
 				updateDeviceListView();
 			}
 		}
+
 	}
 
 	@Override
@@ -168,8 +171,9 @@ public class MainActivity extends ActionBarActivity {
 		if (id == R.id.action_settings) {
 			return true;
 		} else if (id == R.id.action_new) {
-			Toast.makeText(MainActivity.this, "add new device",
-					Toast.LENGTH_SHORT).show();
+			Device newDevice = new Device();
+			newDevice.setName("new device");
+			startDeviceDetailAcitivity(newDevice);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

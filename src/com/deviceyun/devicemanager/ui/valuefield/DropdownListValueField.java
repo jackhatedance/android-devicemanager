@@ -1,4 +1,6 @@
-package com.deviceyun.devicemanager.ui;
+package com.deviceyun.devicemanager.ui.valuefield;
+
+import com.deviceyun.devicemanager.ui.DropdownList;
 
 public class DropdownListValueField<T> implements ValueField {
 	private DropdownList dropdownList;

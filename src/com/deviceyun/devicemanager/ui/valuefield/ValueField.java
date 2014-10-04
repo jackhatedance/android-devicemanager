@@ -1,4 +1,4 @@
-package com.deviceyun.devicemanager.ui;
+package com.deviceyun.devicemanager.ui.valuefield;
 
 public interface ValueField {
 	String getValue();

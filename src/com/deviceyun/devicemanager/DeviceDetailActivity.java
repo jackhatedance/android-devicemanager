@@ -1,5 +1,6 @@
 package com.deviceyun.devicemanager;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -85,11 +86,23 @@ public class DeviceDetailActivity extends ActionBarActivity {
 		vendors = remoteService.getAllVendors(currentLocale.toString());
 		deviceClasses = remoteService.getDeviceClasses(device.getVendorId(),
 				currentLocale.toString());
-		models = remoteService.getModels(device.getVendorId(),
-				device.getDeviceClassId(), currentLocale.toString());
-		drivers = remoteService.getDrivers(device.getModelId());
-		functionalDevices = remoteService.getFunctionalDevices(device.getId(),
-				currentLocale.toString());
+
+		if (device.getVendorId() != null) {
+			models = remoteService.getModels(device.getVendorId(),
+					device.getDeviceClassId(), currentLocale.toString());
+		} else
+			models = new ArrayList<Model>();
+
+		if (device.getModelId() != null)
+			drivers = remoteService.getDrivers(device.getModelId());
+		else
+			drivers = new ArrayList<Driver>();
+
+		if (device.getId() != null)
+			functionalDevices = remoteService.getFunctionalDevices(
+					device.getId(), currentLocale.toString());
+		else
+			functionalDevices = new ArrayList<FunctionalDevice>();
 
 		vendorDropdownList = new DropdownList<Vendor>(this,
 				android.R.layout.simple_spinner_item, vendors, vendor,
@@ -209,13 +222,18 @@ public class DeviceDetailActivity extends ActionBarActivity {
 
 			@Override
 			public void onClick(View v) {
-				Intent myIntent = new Intent(DeviceDetailActivity.this,
-						DeviceConfigurationActivity.class);
+				if (device.getDriverId() != null) {
 
-				updateModel();
+					Intent myIntent = new Intent(DeviceDetailActivity.this,
+							DeviceConfigurationActivity.class);
 
-				myIntent.putExtra("device", device);
-				startActivityForResult(myIntent, 1);
+					updateModel();
+
+					myIntent.putExtra("device", device);
+					startActivityForResult(myIntent, 1);
+				} else
+					Toast.makeText(DeviceDetailActivity.this,
+							"No driver selected", Toast.LENGTH_SHORT).show();
 			}
 		});
 
@@ -312,8 +330,6 @@ public class DeviceDetailActivity extends ActionBarActivity {
 	}
 
 	private void refreshModelDropdownList() {
-		Toast.makeText(DeviceDetailActivity.this, "vendor chnaged",
-				Toast.LENGTH_SHORT).show();
 
 		// update model options
 		models = remoteService.getModels(
@@ -395,6 +411,9 @@ public class DeviceDetailActivity extends ActionBarActivity {
 	}
 
 	private void saveModel() {
-		remoteService.updateDevice(device);
+		if(device.getId()!=null)
+			remoteService.updateDevice(device);
+		else
+			remoteService.addDevice(Constants.USER_ID,device);
 	}
 }

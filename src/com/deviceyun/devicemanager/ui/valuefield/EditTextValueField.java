@@ -1,4 +1,4 @@
-package com.deviceyun.devicemanager.ui;
+package com.deviceyun.devicemanager.ui.valuefield;
 
 import android.widget.EditText;
 
