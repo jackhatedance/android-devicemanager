@@ -1,4 +1,4 @@
-package com.deviceyun.devicemanager.devicelist;
+package com.deviceyun.devicemanager.operation_activity;
 
 import com.deviceyun.devicemanager.R;
 import com.deviceyun.devicemanager.R.id;

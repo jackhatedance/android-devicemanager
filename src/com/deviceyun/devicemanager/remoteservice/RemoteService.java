@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import retrofit.http.Body;
+import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.POST;
 import retrofit.http.Path;
@@ -13,6 +14,8 @@ import retrofit.http.QueryMap;
 import com.driverstack.yunos.remote.vo.Device;
 
 public interface RemoteService {
+	
+	
 	@POST("/devices")
 	List<com.driverstack.yunos.remote.vo.Device> addDevice(
 			@Query("userId") String userId, @Body Device device);
@@ -23,6 +26,9 @@ public interface RemoteService {
 
 	@POST("/devices/update")
 	boolean updateDevice(@Body Device device);
+
+	@DELETE("/devices/{deviceId}")
+	boolean deleteDevice(@Path("deviceId") String deviceId);
 
 	@GET("/devices/{deviceId}/configuration")
 	List<com.driverstack.yunos.remote.vo.ConfigurationItem> getDeviceConfiguration(
@@ -69,7 +75,8 @@ public interface RemoteService {
 			@Path("driverId") String driverId, @Query("locale") String locale);
 
 	@POST("/devices/{deviceId}/{functionalDeviceIndex}/{operation}")
-	boolean operateDevice(@Query("appId") String appId,@Path("deviceId") String deviceId,
+	boolean operateDevice(@Query("appId") String appId,
+			@Path("deviceId") String deviceId,
 			@Path("functionalDeviceIndex") int functionalDeviceIndex,
 			@Path("operation") String operation,
 			@QueryMap Map<String, String> paramMap);

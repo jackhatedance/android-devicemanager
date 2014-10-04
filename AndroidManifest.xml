@@ -41,7 +41,7 @@
             android:label="@string/title_activity_device_configuration" >
         </activity>
         <activity
-            android:name="com.deviceyun.devicemanager.devicelist.IrTransmitterActivity"
+            android:name="com.deviceyun.devicemanager.operation_activity.IrTransmitterActivity"
             android:label="@string/title_activity_ir_transmitter" >
             <intent-filter>
                 <action android:name="com.driverstack.devicemanager.intent.action.OPERATE" />

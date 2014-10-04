@@ -3,6 +3,8 @@ package com.deviceyun.devicemanager;
 import java.util.List;
 import java.util.Locale;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -123,14 +125,29 @@ public class MainActivity extends ActionBarActivity {
 		int itemId = item.getItemId();
 		AdapterContextMenuInfo aInfo = (AdapterContextMenuInfo) item
 				.getMenuInfo();
-		Device device = (Device) deviceAdapter.getItem(aInfo.position);
+		final Device device = (Device) deviceAdapter.getItem(aInfo.position);
 
 		if (itemId == 1) {
 			startDeviceDetailAcitivity(device);
+		} else if (itemId == 2) {
+			new AlertDialog.Builder(this)
+					.setIcon(android.R.drawable.ic_dialog_alert)
+					.setTitle("Delete Device?")
+					.setMessage("Are you sure you want to delete this device?")
+					.setPositiveButton("Yes",
+							new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									remoteService.deleteDevice(device.getId());
+									devices.remove(device);
+									updateDeviceListView();
+								}
+
+							}).setNegativeButton("No", null).show();
+
 		}
-		// Implements our logic
-		Toast.makeText(this, "Item id [" + itemId + "]", Toast.LENGTH_SHORT)
-				.show();
+
 		return true;
 	}
 

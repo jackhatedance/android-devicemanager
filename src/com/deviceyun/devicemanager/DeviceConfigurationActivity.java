@@ -169,14 +169,16 @@ public class DeviceConfigurationActivity extends ActionBarActivity {
 
 						@Override
 						public String getName(FunctionalDevice obj) {
+							return String.format("%s:%d(%s)",
+									obj.getDeviceName(), obj.getIndex(),
+									obj.getArtifactName());
 
-							return obj.getOrganizationName() + "-"
-									+ obj.getArtifactName();
 						}
 					});
 
-			functionalDeviceDropdownList.setSelectedObjectById(configurationItem.getValue());
-			
+			functionalDeviceDropdownList
+					.setSelectedObjectById(configurationItem.getValue());
+
 			field = spinner;
 			valueField = new DropdownListValueField(
 					functionalDeviceDropdownList);
