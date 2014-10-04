@@ -13,7 +13,7 @@ import retrofit.http.QueryMap;
 import com.driverstack.yunos.remote.vo.Device;
 
 public interface RemoteService {
-	@POST("/devices/add")
+	@POST("/devices")
 	List<com.driverstack.yunos.remote.vo.Device> addDevice(
 			@Query("userId") String userId, @Body Device device);
 
