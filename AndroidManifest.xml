@@ -60,6 +60,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <data android:mimeType="generic/ElectricitySwitch" />
+                <data android:mimeType="generic/LegacyOnOffDevice" />
             </intent-filter>
         </activity>
     </application>

@@ -21,6 +21,7 @@ import com.deviceyun.devicemanager.remoteservice.RemoteServiceFactory;
 import com.deviceyun.devicemanager.ui.DropdownList;
 import com.deviceyun.devicemanager.ui.ObjectToIdValue;
 import com.deviceyun.devicemanager.utils.Utils;
+import com.driverstack.yunos.remote.vo.ConfigurationItem;
 import com.driverstack.yunos.remote.vo.Device;
 import com.driverstack.yunos.remote.vo.DeviceClass;
 import com.driverstack.yunos.remote.vo.Driver;
@@ -30,10 +31,16 @@ import com.driverstack.yunos.remote.vo.Vendor;
 
 public class DeviceDetailActivity extends ActionBarActivity {
 
+	public static final int REQUEST_DEVICE_CONFIG = 1;
+
 	private RemoteService remoteService;
 	private Locale currentLocale;
 
 	private Device device;
+	/**
+	 * hold value return from device config activity
+	 */
+	private List<ConfigurationItem> deviceConfigurationitems;
 
 	private TextView name;
 	private TextView location;
@@ -222,15 +229,39 @@ public class DeviceDetailActivity extends ActionBarActivity {
 
 			@Override
 			public void onClick(View v) {
-				if (device.getDriverId() != null) {
+				String selDriverId = driverDropdownList
+						.getSelectedObjectId();
+				if (selDriverId != null) {
 
 					Intent myIntent = new Intent(DeviceDetailActivity.this,
 							DeviceConfigurationActivity.class);
 
-					updateModel();
+					// updateModel();
 
-					myIntent.putExtra("device", device);
-					startActivityForResult(myIntent, 1);
+					
+					if (device.getDriverId() == selDriverId) {
+						deviceConfigurationitems = remoteService
+								.getDeviceConfiguration(device.getId());
+					} else {
+						deviceConfigurationitems = remoteService
+								.getDeviceInitialConfiguration(device.getId(),
+										selDriverId);
+					}
+
+					myIntent.putExtra(
+							DeviceConfigurationActivity.EXTRA_DEVICE_ID,
+							device.getId());
+					myIntent.putExtra(
+							DeviceConfigurationActivity.EXTRA_DRIVER_ID,
+							selDriverId);
+
+					myIntent.putExtra(
+							DeviceConfigurationActivity.EXTRA_DEVICE_CONFIGURATION_ITEMS,
+							deviceConfigurationitems
+									.toArray(new ConfigurationItem[0]));
+
+					startActivityForResult(myIntent,
+							DeviceDetailActivity.REQUEST_DEVICE_CONFIG);
 				} else
 					Toast.makeText(DeviceDetailActivity.this,
 							"No driver selected", Toast.LENGTH_SHORT).show();
@@ -260,6 +291,23 @@ public class DeviceDetailActivity extends ActionBarActivity {
 
 		updateView();
 
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (requestCode == REQUEST_DEVICE_CONFIG) {
+			if (resultCode == RESULT_OK) {
+				Object[] array = (Object[]) data
+						.getSerializableExtra(DeviceConfigurationActivity.EXTRA_DEVICE_CONFIGURATION_ITEMS);
+				deviceConfigurationitems = new ArrayList<ConfigurationItem>();
+				for (Object ci : array)
+					deviceConfigurationitems.add((ConfigurationItem)ci);
+
+			}
+		}
 	}
 
 	@Override
@@ -411,9 +459,15 @@ public class DeviceDetailActivity extends ActionBarActivity {
 	}
 
 	private void saveModel() {
-		if(device.getId()!=null)
+		if (device.getId() != null) {
 			remoteService.updateDevice(device);
-		else
-			remoteService.addDevice(Constants.USER_ID,device);
+		} else {
+			remoteService.addDevice(Constants.USER_ID, device);
+		}
+
+		if (deviceConfigurationitems != null)
+			remoteService.updateDeviceConfiguration(device.getId(),
+					deviceConfigurationitems);
+
 	}
 }

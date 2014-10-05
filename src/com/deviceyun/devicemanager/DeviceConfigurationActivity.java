@@ -1,11 +1,13 @@
 package com.deviceyun.devicemanager;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -28,17 +30,21 @@ import com.deviceyun.devicemanager.utils.Utils;
 import com.driverstack.yunos.driver.config.ConfigurationItemPrimaryType;
 import com.driverstack.yunos.driver.config.ConfigurationItemType;
 import com.driverstack.yunos.remote.vo.ConfigurationItem;
-import com.driverstack.yunos.remote.vo.Device;
 import com.driverstack.yunos.remote.vo.DriverConfigurationDefinitionItem;
 import com.driverstack.yunos.remote.vo.FunctionalDevice;
-import com.driverstack.yunos.remote.vo.Vendor;
 
 public class DeviceConfigurationActivity extends ActionBarActivity {
 
+	public final static String EXTRA_DEVICE_ID = "deviceId";
+	public final static String EXTRA_DRIVER_ID = "driverId";
+	public final static String EXTRA_DEVICE_CONFIGURATION_ITEMS = "deviceConfigurationItems";
+
 	private LinearLayout myLinearLayout;
 
+	private String deviceId;
+	private String driverId;
 	private RemoteService remoteService;
-	private Device device;
+	
 
 	private List<ConfigurationItem> deviceConfigurationItems;
 	private Map<String, ConfigurationItem> deviceConfigurationMap;
@@ -55,18 +61,18 @@ public class DeviceConfigurationActivity extends ActionBarActivity {
 		currentLocale = Utils.getLocale(this);
 		remoteService = RemoteServiceFactory.getRemoteService();
 
-		device = (Device) getIntent().getExtras().get("device");
+		deviceId =  getIntent().getExtras().getString(DeviceConfigurationActivity.EXTRA_DEVICE_ID);
+		driverId =  getIntent().getExtras().getString(DeviceConfigurationActivity.EXTRA_DRIVER_ID);
 
 		List<DriverConfigurationDefinitionItem> defItems = remoteService
-				.getDriverConfigurationDefinitionItems(device.getDriverId(),
+				.getDriverConfigurationDefinitionItems(driverId,
 						currentLocale.toString());
 
-		deviceConfigurationItems = remoteService.getDeviceConfiguration(device
-				.getId());
-		if (deviceConfigurationItems.isEmpty())
-			deviceConfigurationItems = remoteService
-					.getDeviceInitialConfiguration(device.getId(),
-							device.getDriverId());
+		Object[] array = (Object[]) getIntent().getSerializableExtra(
+				EXTRA_DEVICE_CONFIGURATION_ITEMS);
+		deviceConfigurationItems = new ArrayList<ConfigurationItem>();
+		for (Object ci : array)
+			deviceConfigurationItems.add((ConfigurationItem) ci);
 
 		deviceConfigurationMap = new HashMap<String, ConfigurationItem>();
 		for (ConfigurationItem ci : deviceConfigurationItems)
@@ -107,9 +113,13 @@ public class DeviceConfigurationActivity extends ActionBarActivity {
 
 			updateModel();
 			try {
-				saveModel();
-
-				setResult(RESULT_OK);
+				// saveModel();
+				Intent result = new Intent();
+				result.putExtra(
+						EXTRA_DEVICE_CONFIGURATION_ITEMS,
+						deviceConfigurationItems
+								.toArray(new ConfigurationItem[0]));
+				setResult(RESULT_OK,result);
 
 				finish();
 			} catch (Exception e) {
@@ -208,7 +218,9 @@ public class DeviceConfigurationActivity extends ActionBarActivity {
 	}
 
 	private void saveModel() {
-		remoteService.updateDeviceConfiguration(device.getId(),
+
+		remoteService.updateDeviceConfiguration(deviceId,
 				deviceConfigurationItems);
+
 	}
 }
