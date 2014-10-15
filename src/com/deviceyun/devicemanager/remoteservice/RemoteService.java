@@ -14,8 +14,7 @@ import retrofit.http.QueryMap;
 import com.driverstack.yunos.remote.vo.Device;
 
 public interface RemoteService {
-	
-	
+
 	@POST("/devices")
 	List<com.driverstack.yunos.remote.vo.Device> addDevice(
 			@Query("userId") String userId, @Body Device device);
@@ -42,6 +41,9 @@ public interface RemoteService {
 	@POST("/devices/{deviceId}/configuration")
 	boolean updateDeviceConfiguration(@Path("deviceId") String deviceId,
 			@Body List<com.driverstack.yunos.remote.vo.ConfigurationItem> items);
+
+	@GET("/devices/reload")
+	boolean reloadDriver(@Query("deviceId") String deviceId);
 
 	@GET("/functionalDevices/by-device")
 	List<com.driverstack.yunos.remote.vo.FunctionalDevice> getFunctionalDevices(

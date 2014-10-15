@@ -229,8 +229,7 @@ public class DeviceDetailActivity extends ActionBarActivity {
 
 			@Override
 			public void onClick(View v) {
-				String selDriverId = driverDropdownList
-						.getSelectedObjectId();
+				String selDriverId = driverDropdownList.getSelectedObjectId();
 				if (selDriverId != null) {
 
 					Intent myIntent = new Intent(DeviceDetailActivity.this,
@@ -238,8 +237,7 @@ public class DeviceDetailActivity extends ActionBarActivity {
 
 					// updateModel();
 
-					
-					if (device.getDriverId() == selDriverId) {
+					if (device.getDriverId().equals(selDriverId)) {
 						deviceConfigurationitems = remoteService
 								.getDeviceConfiguration(device.getId());
 					} else {
@@ -304,7 +302,7 @@ public class DeviceDetailActivity extends ActionBarActivity {
 						.getSerializableExtra(DeviceConfigurationActivity.EXTRA_DEVICE_CONFIGURATION_ITEMS);
 				deviceConfigurationitems = new ArrayList<ConfigurationItem>();
 				for (Object ci : array)
-					deviceConfigurationitems.add((ConfigurationItem)ci);
+					deviceConfigurationitems.add((ConfigurationItem) ci);
 
 			}
 		}
@@ -465,9 +463,10 @@ public class DeviceDetailActivity extends ActionBarActivity {
 			remoteService.addDevice(Constants.USER_ID, device);
 		}
 
-		if (deviceConfigurationitems != null)
+		if (deviceConfigurationitems != null) {
 			remoteService.updateDeviceConfiguration(device.getId(),
 					deviceConfigurationitems);
-
+			remoteService.reloadDriver(device.getId());
+		}
 	}
 }
