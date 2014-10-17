@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.ContextMenu;
@@ -46,10 +47,28 @@ public class MainActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		remoteService = RemoteServiceFactory.getRemoteService();
 		currentLocale = Utils.getLocale(this);
-		devices = remoteService.getUserDevices(userId);
+		remoteService = RemoteServiceFactory.getRemoteService();
 
+		new AsyncTask<Void, Void, Void>() {
+
+			@Override
+			protected Void doInBackground(Void... params) {
+				devices = remoteService.getUserDevices(userId);
+				return null;
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				initUI();
+				super.onPostExecute(result);
+			}
+
+		}.execute();
+
+	}
+
+	private void initUI() {
 		deviceListView = (ListView) findViewById(R.id.listViewDevice);
 		deviceAdapter = new DeviceListAdapter(this,
 				android.R.layout.simple_list_item_1, devices);
@@ -66,40 +85,58 @@ public class MainActivity extends ActionBarActivity {
 						// We know the View is a TextView so we can cast it
 						TextView clickedView = (TextView) view;
 
-						Intent intent = new Intent(Constants.ACTION_OPERATE);
+						final Intent intent = new Intent(
+								Constants.ACTION_OPERATE);
 						// intent.setType(type)
-						Device device = devices.get(position);
-						List<FunctionalDevice> functionalDevices = remoteService
-								.getFunctionalDevices(device.getId(),
-										currentLocale.toString());
-						FunctionalDevice functionalDevice = functionalDevices
-								.get(device.getDefaultFunctionalDeviceIndex());
-						String type = String.format("%s/%s",
-								functionalDevice.getOrganizationId(),
-								functionalDevice.getArtifactId());
+						final Device device = devices.get(position);
 
-						intent.setType(type);
-						intent.putExtra("functionalDevice", functionalDevice);
+						new AsyncTask<Void, Void, Void>() {
+							List<FunctionalDevice> functionalDevices;
 
-						PackageManager packageManager = getPackageManager();
-						List<ResolveInfo> activities = packageManager
-								.queryIntentActivities(intent, 0);
-						boolean isIntentSafe = activities.size() > 0;
+							@Override
+							protected Void doInBackground(Void... params) {
 
-						if (isIntentSafe)
-							startActivity(intent);
-						else
-							Toast.makeText(
-									MainActivity.this,
-									"No available appications for this device, please download some applications from the store.",
-									Toast.LENGTH_SHORT).show();
+								functionalDevices = remoteService
+										.getFunctionalDevices(device.getId(),
+												currentLocale.toString());
+
+								return null;
+							}
+
+							@Override
+							protected void onPostExecute(Void result) {
+								FunctionalDevice functionalDevice = functionalDevices.get(device
+										.getDefaultFunctionalDeviceIndex());
+								String type = String.format("%s/%s",
+										functionalDevice.getOrganizationId(),
+										functionalDevice.getArtifactId());
+
+								intent.setType(type);
+								intent.putExtra("functionalDevice",
+										functionalDevice);
+
+								PackageManager packageManager = getPackageManager();
+								List<ResolveInfo> activities = packageManager
+										.queryIntentActivities(intent, 0);
+								boolean isIntentSafe = activities.size() > 0;
+
+								if (isIntentSafe)
+									startActivity(intent);
+								else
+									Toast.makeText(
+											MainActivity.this,
+											"No available appications for this device, please download some applications from the store.",
+											Toast.LENGTH_SHORT).show();
+								super.onPostExecute(result);
+							}
+
+						}.execute();
 
 					}
 				});
 
 		// we register for the contextmneu
 		registerForContextMenu(deviceListView);
-
 	}
 
 	// We want to create a context Menu when the user long click on an item
