@@ -8,6 +8,7 @@ import java.util.Map;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -44,7 +45,6 @@ public class DeviceConfigurationActivity extends ActionBarActivity {
 	private String deviceId;
 	private String driverId;
 	private RemoteService remoteService;
-	
 
 	private List<ConfigurationItem> deviceConfigurationItems;
 	private Map<String, ConfigurationItem> deviceConfigurationMap;
@@ -61,13 +61,31 @@ public class DeviceConfigurationActivity extends ActionBarActivity {
 		currentLocale = Utils.getLocale(this);
 		remoteService = RemoteServiceFactory.getRemoteService();
 
-		deviceId =  getIntent().getExtras().getString(DeviceConfigurationActivity.EXTRA_DEVICE_ID);
-		driverId =  getIntent().getExtras().getString(DeviceConfigurationActivity.EXTRA_DRIVER_ID);
+		deviceId = getIntent().getExtras().getString(
+				DeviceConfigurationActivity.EXTRA_DEVICE_ID);
+		driverId = getIntent().getExtras().getString(
+				DeviceConfigurationActivity.EXTRA_DRIVER_ID);
 
-		List<DriverConfigurationDefinitionItem> defItems = remoteService
-				.getDriverConfigurationDefinitionItems(driverId,
-						currentLocale.toString());
+		new AsyncTask<Void, Void, Void>() {
+			List<DriverConfigurationDefinitionItem> defItems;
 
+			@Override
+			protected Void doInBackground(Void... params) {
+				defItems = remoteService.getDriverConfigurationDefinitionItems(
+						driverId, currentLocale.toString());
+				return null;
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				initUI(defItems);
+				super.onPostExecute(result);
+			}
+
+		}.execute();
+	}
+
+	private void initUI(List<DriverConfigurationDefinitionItem> defItems) {
 		Object[] array = (Object[]) getIntent().getSerializableExtra(
 				EXTRA_DEVICE_CONFIGURATION_ITEMS);
 		deviceConfigurationItems = new ArrayList<ConfigurationItem>();
@@ -115,11 +133,10 @@ public class DeviceConfigurationActivity extends ActionBarActivity {
 			try {
 				// saveModel();
 				Intent result = new Intent();
-				result.putExtra(
-						EXTRA_DEVICE_CONFIGURATION_ITEMS,
+				result.putExtra(EXTRA_DEVICE_CONFIGURATION_ITEMS,
 						deviceConfigurationItems
 								.toArray(new ConfigurationItem[0]));
-				setResult(RESULT_OK,result);
+				setResult(RESULT_OK, result);
 
 				finish();
 			} catch (Exception e) {
@@ -140,8 +157,8 @@ public class DeviceConfigurationActivity extends ActionBarActivity {
 	}
 
 	public View createRow(Context context,
-			DriverConfigurationDefinitionItem definitionItem,
-			ConfigurationItem configurationItem) {
+			final DriverConfigurationDefinitionItem definitionItem,
+			final ConfigurationItem configurationItem) {
 		// add LInearLayout
 		LinearLayout container = (LinearLayout) new LinearLayout(context);
 
@@ -156,56 +173,72 @@ public class DeviceConfigurationActivity extends ActionBarActivity {
 		label.setText(definitionItem.getDisplayName());
 		label.setLayoutParams(params);
 
-		View field = null;
-		ValueField valueField = null;
+		View field;
 
 		if (definitionItem.getType().getType() == ConfigurationItemPrimaryType.DEVICE) {
 
-			Spinner spinner = new Spinner(this);
+			final Spinner spinner = new Spinner(this);
 
-			ConfigurationItemType cfgItemType = definitionItem.getType();
-			List<FunctionalDevice> fdOptions = remoteService
-					.getFunctionalDevices(MainActivity.userId,
-							cfgItemType.getParameter(),
+			final ConfigurationItemType cfgItemType = definitionItem.getType();
+			new AsyncTask<Void, Void, Void>() {
+				List<FunctionalDevice> fdOptions;
+
+				@Override
+				protected Void doInBackground(Void... params) {
+					fdOptions = remoteService.getFunctionalDevices(
+							MainActivity.userId, cfgItemType.getParameter(),
 							currentLocale.toString());
-			DropdownList<FunctionalDevice> functionalDeviceDropdownList = new DropdownList<FunctionalDevice>(
-					this, android.R.layout.simple_spinner_item, fdOptions,
-					spinner, new ObjectToIdValue<FunctionalDevice>() {
-						@Override
-						public String getId(FunctionalDevice obj) {
+					return null;
+				}
 
-							return obj.getFullId();
-						}
+				@Override
+				protected void onPostExecute(Void result) {
+					DropdownList<FunctionalDevice> functionalDeviceDropdownList = new DropdownList<FunctionalDevice>(
+							DeviceConfigurationActivity.this,
+							android.R.layout.simple_spinner_item, fdOptions,
+							spinner, new ObjectToIdValue<FunctionalDevice>() {
+								@Override
+								public String getId(FunctionalDevice obj) {
 
-						@Override
-						public String getName(FunctionalDevice obj) {
-							return String.format("%s:%d(%s)",
-									obj.getDeviceName(), obj.getIndex(),
-									obj.getArtifactName());
+									return obj.getFullId();
+								}
 
-						}
-					});
+								@Override
+								public String getName(FunctionalDevice obj) {
+									return String.format("%s:%d(%s)",
+											obj.getDeviceName(),
+											obj.getIndex(),
+											obj.getArtifactName());
 
-			functionalDeviceDropdownList
-					.setSelectedObjectById(configurationItem.getValue());
+								}
+							});
+
+					functionalDeviceDropdownList
+							.setSelectedObjectById(configurationItem.getValue());
+
+					ValueField valueField = new DropdownListValueField(
+							functionalDeviceDropdownList);
+
+					fieldMap.put(definitionItem.getName(), valueField);
+					super.onPostExecute(result);
+				}
+
+			}.execute();
 
 			field = spinner;
-			valueField = new DropdownListValueField(
-					functionalDeviceDropdownList);
+
 		} else {
 			EditText edit = new EditText(this);
 			edit.setText(configurationItem.getValue());
 			label.setLayoutParams(params);
 
 			field = edit;
-			valueField = new EditTextValueField(edit);
-
+			ValueField valueField = new EditTextValueField(edit);
+			fieldMap.put(definitionItem.getName(), valueField);
 		}
 		// add the textView and the Button to LinearLayout
 		container.addView(label);
 		container.addView(field);
-
-		fieldMap.put(definitionItem.getName(), valueField);
 
 		return container;
 	}
@@ -217,10 +250,4 @@ public class DeviceConfigurationActivity extends ActionBarActivity {
 		}
 	}
 
-	private void saveModel() {
-
-		remoteService.updateDeviceConfiguration(deviceId,
-				deviceConfigurationItems);
-
-	}
 }

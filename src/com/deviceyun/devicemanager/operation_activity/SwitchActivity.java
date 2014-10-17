@@ -14,6 +14,7 @@ import com.driverstack.yunos.remote.vo.Device;
 import com.driverstack.yunos.remote.vo.FunctionalDevice;
 
 import android.support.v7.app.ActionBarActivity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,10 +45,26 @@ public class SwitchActivity extends ActionBarActivity {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
-				String operation = isChecked ? "on" : "off";
-				Map<String, String> paramMap = new HashMap<String, String>();
-				remoteService.operateDevice(Constants.APP_ID,fd.getDeviceId(), fd.getIndex(),
-						operation, paramMap);
+				final String operation = isChecked ? "on" : "off";
+				final Map<String, String> paramMap = new HashMap<String, String>();
+				
+				new AsyncTask<Void, Void, Void>() {
+
+					@Override
+					protected Void doInBackground(Void... params) {
+						remoteService.operateDevice(Constants.APP_ID,fd.getDeviceId(), fd.getIndex(),
+								operation, paramMap);
+						return null;
+					}
+
+					@Override
+					protected void onPostExecute(Void result) {
+						 
+						super.onPostExecute(result);
+					}
+
+				}.execute();
+				
 
 			}
 		});

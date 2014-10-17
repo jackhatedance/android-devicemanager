@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Locale;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -87,9 +88,27 @@ public class DeviceDetailActivity extends ActionBarActivity {
 
 		device = (Device) getIntent().getExtras().get("device");
 
+		new AsyncTask<Void, Void, Void>() {
+
+			@Override
+			protected Void doInBackground(Void... params) {
+				loadData();
+				return null;
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				initUI();
+				super.onPostExecute(result);
+			}
+
+		}.execute();
+	}
+
+	private void loadData() {
 		// load data
 		remoteService = RemoteServiceFactory.getRemoteService();
-		currentLocale = Utils.getLocale(this);
+		currentLocale = Utils.getLocale(DeviceDetailActivity.this);
 		vendors = remoteService.getAllVendors(currentLocale.toString());
 		deviceClasses = remoteService.getDeviceClasses(device.getVendorId(),
 				currentLocale.toString());
@@ -110,7 +129,9 @@ public class DeviceDetailActivity extends ActionBarActivity {
 					device.getId(), currentLocale.toString());
 		else
 			functionalDevices = new ArrayList<FunctionalDevice>();
+	}
 
+	private void initUI() {
 		vendorDropdownList = new DropdownList<Vendor>(this,
 				android.R.layout.simple_spinner_item, vendors, vendor,
 				new ObjectToIdValue<Vendor>() {
@@ -229,37 +250,51 @@ public class DeviceDetailActivity extends ActionBarActivity {
 
 			@Override
 			public void onClick(View v) {
-				String selDriverId = driverDropdownList.getSelectedObjectId();
+				final String selDriverId = driverDropdownList
+						.getSelectedObjectId();
 				if (selDriverId != null) {
 
-					Intent myIntent = new Intent(DeviceDetailActivity.this,
+					final Intent myIntent = new Intent(
+							DeviceDetailActivity.this,
 							DeviceConfigurationActivity.class);
 
 					// updateModel();
+					new AsyncTask<Void, Void, Void>() {
 
-					if (device.getDriverId().equals(selDriverId)) {
-						deviceConfigurationitems = remoteService
-								.getDeviceConfiguration(device.getId());
-					} else {
-						deviceConfigurationitems = remoteService
-								.getDeviceInitialConfiguration(device.getId(),
-										selDriverId);
-					}
+						@Override
+						protected Void doInBackground(Void... params) {
+							if (device.getDriverId().equals(selDriverId)) {
+								deviceConfigurationitems = remoteService
+										.getDeviceConfiguration(device.getId());
+							} else {
+								deviceConfigurationitems = remoteService
+										.getDeviceInitialConfiguration(
+												device.getId(), selDriverId);
+							}
+							return null;
+						}
 
-					myIntent.putExtra(
-							DeviceConfigurationActivity.EXTRA_DEVICE_ID,
-							device.getId());
-					myIntent.putExtra(
-							DeviceConfigurationActivity.EXTRA_DRIVER_ID,
-							selDriverId);
+						@Override
+						protected void onPostExecute(Void result) {
+							myIntent.putExtra(
+									DeviceConfigurationActivity.EXTRA_DEVICE_ID,
+									device.getId());
+							myIntent.putExtra(
+									DeviceConfigurationActivity.EXTRA_DRIVER_ID,
+									selDriverId);
 
-					myIntent.putExtra(
-							DeviceConfigurationActivity.EXTRA_DEVICE_CONFIGURATION_ITEMS,
-							deviceConfigurationitems
-									.toArray(new ConfigurationItem[0]));
+							myIntent.putExtra(
+									DeviceConfigurationActivity.EXTRA_DEVICE_CONFIGURATION_ITEMS,
+									deviceConfigurationitems
+											.toArray(new ConfigurationItem[0]));
 
-					startActivityForResult(myIntent,
-							DeviceDetailActivity.REQUEST_DEVICE_CONFIG);
+							startActivityForResult(myIntent,
+									DeviceDetailActivity.REQUEST_DEVICE_CONFIG);
+							super.onPostExecute(result);
+						}
+
+					}.execute();
+
 				} else
 					Toast.makeText(DeviceDetailActivity.this,
 							"No driver selected", Toast.LENGTH_SHORT).show();
@@ -327,11 +362,24 @@ public class DeviceDetailActivity extends ActionBarActivity {
 
 			updateModel();
 			try {
-				saveModel();
+				new AsyncTask<Void, Void, Void>() {
 
-				setResult(RESULT_OK);
+					@Override
+					protected Void doInBackground(Void... params) {
+						saveModel();
+						return null;
+					}
 
-				finish();
+					@Override
+					protected void onPostExecute(Void result) {
+						setResult(RESULT_OK);
+
+						finish();
+						super.onPostExecute(result);
+					}
+
+				}.execute();
+
 			} catch (Exception e) {
 				Toast.makeText(DeviceDetailActivity.this,
 						"saved failed:" + e.getLocalizedMessage(),
@@ -354,73 +402,112 @@ public class DeviceDetailActivity extends ActionBarActivity {
 	private void refreshDeviceClassDropdownList() {
 
 		// update model options
-		deviceClasses = remoteService.getDeviceClasses(
-				vendorDropdownList.getSelectedObjectId(),
-				currentLocale.toString());
 
-		deviceClassDropdownList = new DropdownList<DeviceClass>(this,
-				android.R.layout.simple_spinner_item, deviceClasses,
-				deviceClass, new ObjectToIdValue<DeviceClass>() {
-					@Override
-					public String getId(DeviceClass obj) {
+		new AsyncTask<Void, Void, Void>() {
 
-						return obj.getId();
-					}
+			@Override
+			protected Void doInBackground(Void... params) {
+				deviceClasses = remoteService.getDeviceClasses(
+						vendorDropdownList.getSelectedObjectId(),
+						currentLocale.toString());
+				return null;
+			}
 
-					@Override
-					public String getName(DeviceClass obj) {
+			@Override
+			protected void onPostExecute(Void result) {
+				deviceClassDropdownList = new DropdownList<DeviceClass>(
+						DeviceDetailActivity.this,
+						android.R.layout.simple_spinner_item, deviceClasses,
+						deviceClass, new ObjectToIdValue<DeviceClass>() {
+							@Override
+							public String getId(DeviceClass obj) {
 
-						return obj.getName();
-					}
-				});
+								return obj.getId();
+							}
+
+							@Override
+							public String getName(DeviceClass obj) {
+
+								return obj.getName();
+							}
+						});
+				super.onPostExecute(result);
+			}
+
+		}.execute();
+
 	}
 
 	private void refreshModelDropdownList() {
+		new AsyncTask<Void, Void, Void>() {
 
-		// update model options
-		models = remoteService.getModels(
-				vendorDropdownList.getSelectedObjectId(),
-				deviceClassDropdownList.getSelectedObjectId(),
-				currentLocale.toString());
+			@Override
+			protected Void doInBackground(Void... params) {
+				models = remoteService.getModels(
+						vendorDropdownList.getSelectedObjectId(),
+						deviceClassDropdownList.getSelectedObjectId(),
+						currentLocale.toString());
+				return null;
+			}
 
-		modelDropdownList = new DropdownList<Model>(DeviceDetailActivity.this,
-				android.R.layout.simple_spinner_item, models, model,
-				new ObjectToIdValue<Model>() {
-					@Override
-					public String getId(Model obj) {
+			@Override
+			protected void onPostExecute(Void result) {
+				modelDropdownList = new DropdownList<Model>(
+						DeviceDetailActivity.this,
+						android.R.layout.simple_spinner_item, models, model,
+						new ObjectToIdValue<Model>() {
+							@Override
+							public String getId(Model obj) {
 
-						return obj.getId();
-					}
+								return obj.getId();
+							}
 
-					@Override
-					public String getName(Model obj) {
+							@Override
+							public String getName(Model obj) {
 
-						return obj.getName();
-					}
-				});
+								return obj.getName();
+							}
+						});
+				super.onPostExecute(result);
+			}
+
+		}.execute();
+
 	}
 
 	private void refreshDriverDropdownList() {
-		// update driver options
-		drivers = remoteService.getDrivers(modelDropdownList
-				.getSelectedObjectId());
+		new AsyncTask<Void, Void, Void>() {
 
-		driverDropdownList = new DropdownList<Driver>(
-				DeviceDetailActivity.this,
-				android.R.layout.simple_spinner_item, drivers, driver,
-				new ObjectToIdValue<Driver>() {
-					@Override
-					public String getId(Driver obj) {
+			@Override
+			protected Void doInBackground(Void... params) {
+				drivers = remoteService.getDrivers(modelDropdownList
+						.getSelectedObjectId());
+				return null;
+			}
 
-						return obj.getId();
-					}
+			@Override
+			protected void onPostExecute(Void result) {
+				driverDropdownList = new DropdownList<Driver>(
+						DeviceDetailActivity.this,
+						android.R.layout.simple_spinner_item, drivers, driver,
+						new ObjectToIdValue<Driver>() {
+							@Override
+							public String getId(Driver obj) {
 
-					@Override
-					public String getName(Driver obj) {
+								return obj.getId();
+							}
 
-						return obj.toString();
-					}
-				});
+							@Override
+							public String getName(Driver obj) {
+
+								return obj.toString();
+							}
+						});
+				super.onPostExecute(result);
+			}
+
+		}.execute();
+
 	}
 
 	private void updateView() {
