@@ -54,6 +54,7 @@ public class MainActivity extends ActionBarActivity {
 
 			@Override
 			protected Void doInBackground(Void... params) {
+				remoteService.login("dev", "pass");
 				devices = remoteService.getUserDevices(userId);
 				return null;
 			}
