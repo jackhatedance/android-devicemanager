@@ -15,9 +15,7 @@ import com.driverstack.yunos.remote.vo.Device;
 
 public interface RemoteService {
 
-	@POST("/login_check")
-	Object login(@Query("j_username") String userId,
-			@Query("j_password") String password);
+	
 
 	@POST("/devices")
 	List<com.driverstack.yunos.remote.vo.Device> addDevice(
