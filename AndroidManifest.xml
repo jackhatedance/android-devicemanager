@@ -63,16 +63,19 @@
                 <data android:mimeType="generic/LegacyOnOffDevice" />
             </intent-filter>
         </activity>
-        
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login1" >
+        </activity>
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings" >
         </activity>
     </application>
 
     <!--
      To retrieve OAuth 2.0 tokens or invalidate tokens to disconnect a user. This disconnect
-     option is required to comply with the Google+ Sign-In developer policies
+     option is required to comply with the Google+ Sign-In developer policies
     -->
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
 

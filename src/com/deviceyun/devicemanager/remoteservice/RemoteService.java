@@ -20,6 +20,9 @@ public interface RemoteService {
 	@POST("/auth/requestAccessToken")
 	AccessToken requestAccessToken();
 
+	@GET("/auth/destroyToken")
+	boolean destroyToken();
+
 	@GET("/users/{userId}")
 	User getUser(@Path("userId") String userId);
 

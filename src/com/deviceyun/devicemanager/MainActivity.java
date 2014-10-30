@@ -73,20 +73,7 @@ public class MainActivity extends ActionBarActivity {
 
 		}
 		if (!isTokenValid) {
-			// user is not logged in redirect him to Login Activity
-			Intent i = new Intent(this, LoginActivity.class);
-
-			// Closing all the Activities from stack
-			i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-			// Add new Flag to start new Activity
-			i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-			// Staring Login Activity
-			startActivity(i);
-
-			finish();
-
+			startLoginActivity();
 			return;
 		}
 
@@ -238,6 +225,22 @@ public class MainActivity extends ActionBarActivity {
 		startActivityForResult(myIntent, REQUEST_DEVICE_DETAIL);
 	}
 
+	private void startLoginActivity() {
+		// user is not logged in redirect him to Login Activity
+		Intent i = new Intent(this, LoginActivity.class);
+
+		// Closing all the Activities from stack
+		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+		// Add new Flag to start new Activity
+		i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+		// Staring Login Activity
+		startActivity(i);
+
+		finish();
+	}
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -266,14 +269,35 @@ public class MainActivity extends ActionBarActivity {
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		} else if (id == R.id.action_new) {
+		switch (item.getItemId()) {
+		case R.id.action_settings:
+
+			break;
+
+		case R.id.action_new:
 			Device newDevice = new Device();
 			newDevice.setName("new device");
 			startDeviceDetailAcitivity(newDevice);
-			return true;
+			break;
+
+		case R.id.action_logout:
+
+			SessionManager sm = new SessionManager(this);
+			if (sm.getUsername() != null) {
+				RemoteService rs = RemoteServiceFactory.getRemoteService(
+						sm.getTokenKey(), sm.getTokensSecret());
+				try {
+					rs.destroyToken();
+					sm.removeUser();
+					startLoginActivity();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+			break;
 		}
+
 		return super.onOptionsItemSelected(item);
 	}
 
