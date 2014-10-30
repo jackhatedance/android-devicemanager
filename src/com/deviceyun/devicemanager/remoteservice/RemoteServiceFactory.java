@@ -1,7 +1,5 @@
 package com.deviceyun.devicemanager.remoteservice;
 
-import java.net.CookiePolicy;
-import java.net.HttpCookie;
 import java.util.Date;
 
 import org.apache.http.Header;
@@ -10,34 +8,37 @@ import org.apache.http.impl.auth.BasicScheme;
 
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
-import retrofit.client.OkClient;
 import retrofit.converter.GsonConverter;
+import android.content.Context;
 
+import com.deviceyun.devicemanager.manager.SessionManager;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.internal.bind.DateTypeAdapter;
-import com.squareup.okhttp.OkHttpClient;
 
 public class RemoteServiceFactory {
-	//private static final String urlApi = "http://api.dev.deviceyun.com/api/1.0/";
-	 private static final String urlApi = "http://win7dev:8080/web/api/1.0/";
-
-	private static RemoteService remoteService = null;
-
-	static private String username = "jackding";
-	static private String password = "pass";
-
-	public static RemoteService getRemoteService() {
-		if (remoteService == null)
-			remoteService = createRemoteService(username, password);
-		return remoteService;
-	}
+	// private static final String urlApi =
+	// "http://www.driverstack.com:8080/yunos/api/1.0/";
+	// private static final String urlApi =
+	// "http://api.dev.deviceyun.com/api/1.0/";
+	private static final String DEFAULT_URL = "http://win7dev:8080/web/api/1.0/";
+	static private String DEFAULT_USERNAME = "jackding";
+	static private String DEFAULT_PASSWORD = "pass";
 
 	public static RemoteService getRemoteService(String username,
 			String password) {
-		if (remoteService == null)
-			remoteService = createRemoteService(username, password);
+		RemoteService remoteService = createRemoteService(username, password);
+		return remoteService;
+	}
+
+	public static RemoteService getRemoteService(Context context) {
+		SessionManager ds = new SessionManager(context);
+		
+		String key = ds.getTokenKey();
+		String secret = ds.getTokensSecret();
+
+		RemoteService remoteService = createRemoteService(key, secret);
 		return remoteService;
 	}
 
@@ -62,8 +63,8 @@ public class RemoteServiceFactory {
 			}
 		};
 
-		RestAdapter restAdapter = new RestAdapter.Builder().setEndpoint(urlApi)
-				.setConverter(new GsonConverter(gson))
+		RestAdapter restAdapter = new RestAdapter.Builder()
+				.setEndpoint(DEFAULT_URL).setConverter(new GsonConverter(gson))
 				.setRequestInterceptor(AuthIntercepter).build();
 
 		RemoteService service = restAdapter.create(RemoteService.class);

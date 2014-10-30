@@ -19,5 +19,6 @@
     <string name="action_cancel">Cancel</string>
     <string name="title_activity_ir_transmitter">IrTransmitterActivity</string>
     <string name="title_activity_switch">SwitchActivity</string>
+    <string name="title_activity_login1">Login1Activity</string>
 
 </resources>

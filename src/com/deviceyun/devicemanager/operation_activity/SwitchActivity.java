@@ -33,7 +33,7 @@ public class SwitchActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_switch);
 
-		remoteService = RemoteServiceFactory.getRemoteService();
+		remoteService = RemoteServiceFactory.getRemoteService(this);
 
 		final FunctionalDevice fd = (FunctionalDevice) getIntent().getExtras()
 				.get("functionalDevice");

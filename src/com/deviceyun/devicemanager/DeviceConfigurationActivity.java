@@ -59,7 +59,7 @@ public class DeviceConfigurationActivity extends ActionBarActivity {
 		setContentView(R.layout.activity_device_configuration);
 
 		currentLocale = Utils.getLocale(this);
-		remoteService = RemoteServiceFactory.getRemoteService();
+		remoteService = RemoteServiceFactory.getRemoteService(this);
 
 		deviceId = getIntent().getExtras().getString(
 				DeviceConfigurationActivity.EXTRA_DEVICE_ID);

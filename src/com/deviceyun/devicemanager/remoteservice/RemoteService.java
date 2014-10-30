@@ -11,11 +11,17 @@ import retrofit.http.Path;
 import retrofit.http.Query;
 import retrofit.http.QueryMap;
 
+import com.driverstack.yunos.remote.vo.AccessToken;
 import com.driverstack.yunos.remote.vo.Device;
+import com.driverstack.yunos.remote.vo.User;
 
 public interface RemoteService {
 
-	
+	@POST("/auth/requestAccessToken")
+	AccessToken requestAccessToken();
+
+	@GET("/users/{userId}")
+	User getUser(@Path("userId") String userId);
 
 	@POST("/devices")
 	List<com.driverstack.yunos.remote.vo.Device> addDevice(

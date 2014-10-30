@@ -41,7 +41,7 @@
             android:label="@string/title_activity_device_configuration" >
         </activity>
         <activity
-            android:name="com.deviceyun.devicemanager.operation_activity.IrTransmitterActivity"
+            android:name=".operation_activity.IrTransmitterActivity"
             android:label="@string/title_activity_ir_transmitter" >
             <intent-filter>
                 <action android:name="com.driverstack.devicemanager.intent.action.OPERATE" />
@@ -52,7 +52,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.deviceyun.devicemanager.operation_activity.SwitchActivity"
+            android:name=".operation_activity.SwitchActivity"
             android:label="@string/title_activity_switch" >
             <intent-filter>
                 <action android:name="com.driverstack.devicemanager.intent.action.OPERATE" />
@@ -63,6 +63,24 @@
                 <data android:mimeType="generic/LegacyOnOffDevice" />
             </intent-filter>
         </activity>
+        
+        <activity
+            android:name=".LoginActivity"
+            android:label="@string/title_activity_login1" >
+        </activity>
     </application>
+
+    <!--
+     To retrieve OAuth 2.0 tokens or invalidate tokens to disconnect a user. This disconnect
+     option is required to comply with the Google+ Sign-In developer policies
+    -->
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+
+    <!-- To retrieve the account name (email) as part of sign-in: -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+
+    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
 </manifest>

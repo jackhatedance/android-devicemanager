@@ -107,7 +107,7 @@ public class DeviceDetailActivity extends ActionBarActivity {
 
 	private void loadData() {
 		// load data
-		remoteService = RemoteServiceFactory.getRemoteService();
+		remoteService = RemoteServiceFactory.getRemoteService(this);
 		currentLocale = Utils.getLocale(DeviceDetailActivity.this);
 		vendors = remoteService.getAllVendors(currentLocale.toString());
 		deviceClasses = remoteService.getDeviceClasses(device.getVendorId(),

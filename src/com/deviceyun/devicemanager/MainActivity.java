@@ -23,11 +23,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.deviceyun.devicemanager.devicelist.DeviceListAdapter;
+import com.deviceyun.devicemanager.manager.SessionManager;
 import com.deviceyun.devicemanager.remoteservice.RemoteService;
 import com.deviceyun.devicemanager.remoteservice.RemoteServiceFactory;
 import com.deviceyun.devicemanager.utils.Utils;
 import com.driverstack.yunos.remote.vo.Device;
 import com.driverstack.yunos.remote.vo.FunctionalDevice;
+import com.driverstack.yunos.remote.vo.User;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -42,19 +44,60 @@ public class MainActivity extends ActionBarActivity {
 
 	public static String userId = "jackding";
 
+	private SessionManager localDataStore;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		// check login
+		localDataStore = new SessionManager(this);
+		boolean isTokenValid = false;
+		String username = localDataStore.getUsername();
+		if (username != null) {
+			// test token, in case it is expired.
+			String key = localDataStore.getTokenKey();
+			String secret = localDataStore.getTokensSecret();
+
+			RemoteService remoteService = new RemoteServiceFactory()
+					.getRemoteService(key, secret);
+
+			try {
+				User user = remoteService.getUser(userId);
+				isTokenValid = true;
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+		if (!isTokenValid) {
+			// user is not logged in redirect him to Login Activity
+			Intent i = new Intent(this, LoginActivity.class);
+
+			// Closing all the Activities from stack
+			i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+			// Add new Flag to start new Activity
+			i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+			// Staring Login Activity
+			startActivity(i);
+
+			finish();
+
+			return;
+		}
+
 		currentLocale = Utils.getLocale(this);
-		remoteService = RemoteServiceFactory.getRemoteService();
+		remoteService = RemoteServiceFactory.getRemoteService(this);
 
 		new AsyncTask<Void, Void, Void>() {
 
 			@Override
 			protected Void doInBackground(Void... params) {
-				
+
 				devices = remoteService.getUserDevices(userId);
 				return null;
 			}
