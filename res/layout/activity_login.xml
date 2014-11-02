@@ -97,12 +97,12 @@
                     android:background="@android:color/darker_gray" />
 
                 <Button
-                    android:id="@+id/createAccount"
+                    android:id="@+id/buttonRegister"
                     style="?android:textAppearanceSmall"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Create an account"
+                    android:text="Register"
                     android:textStyle="bold" />
 
                 <Button

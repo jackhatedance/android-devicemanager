@@ -42,7 +42,7 @@ public class MainActivity extends ActionBarActivity {
 	DeviceListAdapter deviceAdapter;
 	private List<Device> devices;
 
-	public static String userId = "jackding";
+	public static String userId;
 
 	private SessionManager localDataStore;
 
@@ -54,8 +54,8 @@ public class MainActivity extends ActionBarActivity {
 		// check login
 		localDataStore = new SessionManager(this);
 		boolean isTokenValid = false;
-		String username = localDataStore.getUsername();
-		if (username != null) {
+		userId = localDataStore.getUsername();
+		if (userId != null) {
 			// test token, in case it is expired.
 			String key = localDataStore.getTokenKey();
 			String secret = localDataStore.getTokensSecret();

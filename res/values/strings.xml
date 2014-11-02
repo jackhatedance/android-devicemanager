@@ -20,5 +20,11 @@
     <string name="title_activity_ir_transmitter">IrTransmitterActivity</string>
     <string name="title_activity_switch">SwitchActivity</string>
     <string name="title_activity_login1">Login1Activity</string>
+    <string name="title_activity_register">RegisterActivity</string>
+    <string name="activity_register_username">Username</string>
+    <string name="activity_register_firstName">First Name</string>
+    <string name="activity_register_lastName">Last Name</string>
+    <string name="activity_register_email">Email</string>
+    <string name="password">Password</string>
 
 </resources>

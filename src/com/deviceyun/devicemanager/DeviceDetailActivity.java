@@ -79,7 +79,7 @@ public class DeviceDetailActivity extends ActionBarActivity {
 		deviceClass = (Spinner) findViewById(R.id.deviceClass);
 		model = (Spinner) findViewById(R.id.model);
 
-		name = (TextView) findViewById(R.id.name);
+		name = (TextView) findViewById(R.id.name1);
 		location = (TextView) findViewById(R.id.location);
 		description = (TextView) findViewById(R.id.description);
 

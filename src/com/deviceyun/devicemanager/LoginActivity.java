@@ -21,6 +21,7 @@ public class LoginActivity extends ActionBarActivity {
 	private TextView textViewUsername;
 	private TextView textViewPassword;
 	private Button buttonLogin;
+	private Button buttonRegister;
 
 	SessionManager dataStore;
 
@@ -61,6 +62,15 @@ public class LoginActivity extends ActionBarActivity {
 			}
 		});
 
+		buttonRegister = (Button) findViewById(R.id.buttonRegister);
+		buttonRegister.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+
+				startRegisterActivity();
+			}
+		});
 	}
 
 	private void startMainActivity() {
@@ -73,6 +83,15 @@ public class LoginActivity extends ActionBarActivity {
 		i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
 		// Staring Login Activity
+		startActivity(i);
+
+		finish();
+	}
+
+	private void startRegisterActivity() {
+
+		Intent i = new Intent(this, RegisterActivity.class);
+
 		startActivity(i);
 
 		finish();

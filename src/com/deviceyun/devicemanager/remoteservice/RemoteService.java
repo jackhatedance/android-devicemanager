@@ -17,6 +17,9 @@ import com.driverstack.yunos.remote.vo.User;
 
 public interface RemoteService {
 
+	@POST("/users")
+	boolean createUser(@Body User user);
+
 	@POST("/auth/requestAccessToken")
 	AccessToken requestAccessToken();
 
