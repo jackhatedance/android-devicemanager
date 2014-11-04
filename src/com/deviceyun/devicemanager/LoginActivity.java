@@ -11,7 +11,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.deviceyun.devicemanager.manager.Session;
 import com.deviceyun.devicemanager.manager.SessionManager;
+import com.deviceyun.devicemanager.preference.Settings;
 import com.deviceyun.devicemanager.remoteservice.RemoteService;
 import com.deviceyun.devicemanager.remoteservice.RemoteServiceFactory;
 import com.driverstack.yunos.remote.vo.AccessToken;
@@ -23,14 +25,14 @@ public class LoginActivity extends ActionBarActivity {
 	private Button buttonLogin;
 	private Button buttonRegister;
 
-	SessionManager dataStore;
+	SessionManager sessionManager;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 
-		dataStore = new SessionManager(this);
+		sessionManager = new SessionManager(this);
 
 		textViewUsername = (TextView) findViewById(R.id.username);
 		textViewPassword = (TextView) findViewById(R.id.password);
@@ -45,14 +47,17 @@ public class LoginActivity extends ActionBarActivity {
 				String username = textViewUsername.getText().toString().trim();
 				String password = textViewPassword.getText().toString().trim();
 
+				Settings settings = new Settings(LoginActivity.this);
+				String url = settings.getEffectiveServerUrl();
 				try {
-					RemoteService authService = RemoteServiceFactory
-							.getRemoteService(username, password);
+					RemoteService remoteService = RemoteServiceFactory
+							.getRemoteService(url, username, password);
 
-					AccessToken accessToken = authService.requestAccessToken();
+					AccessToken accessToken = remoteService.requestAccessToken();
 
-					dataStore.saveUser(username, accessToken.getKey(),
-							accessToken.getSecret());
+					sessionManager.createSession(username, accessToken.getKey(),
+							accessToken.getSecret(), url);
+
 					startMainActivity();
 				} catch (Exception e) {
 					Toast.makeText(getApplicationContext(),
@@ -111,6 +116,8 @@ public class LoginActivity extends ActionBarActivity {
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
+			Intent i = new Intent(this, SettingsActivity.class);
+			startActivity(i);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

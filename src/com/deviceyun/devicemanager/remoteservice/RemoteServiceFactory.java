@@ -3,20 +3,17 @@ package com.deviceyun.devicemanager.remoteservice;
 import java.util.Date;
 
 import org.apache.http.Header;
-import org.apache.http.HttpStatus;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.impl.auth.BasicScheme;
 
-import retrofit.ErrorHandler;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 import retrofit.converter.GsonConverter;
 import android.content.Context;
 
+import com.deviceyun.devicemanager.manager.Session;
 import com.deviceyun.devicemanager.manager.SessionManager;
-import com.driverstack.yunos.remote.exception.RestApiError;
+import com.deviceyun.devicemanager.preference.Settings;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -27,31 +24,43 @@ public class RemoteServiceFactory {
 	// "http://www.driverstack.com:8080/yunos/api/1.0/";
 	// private static final String urlApi =
 	// "http://api.dev.deviceyun.com/api/1.0/";
-	private static final String DEFAULT_URL = "http://win7dev:8080/web/api/1.0/";
-	
-	public static RemoteService getRemoteService(String username,
+	// private static final String DEFAULT_URL =
+	// "http://win7dev:8080/web/api/1.0/";
+
+	public static RemoteService getRemoteService(String url, String username,
 			String password) {
-		RemoteService remoteService = createRemoteService(username, password);
+		RemoteService remoteService = createRemoteService(url, username,
+				password);
 		return remoteService;
 	}
 
-	public static RemoteService getRemoteService() {
-		RemoteService remoteService = createRemoteService(null, null);
+	public static RemoteService getRemoteService(String url) {
+		RemoteService remoteService = createRemoteService(url, null, null);
 		return remoteService;
 	}
 
 	public static RemoteService getRemoteService(Context context) {
-		SessionManager ds = new SessionManager(context);
+		SessionManager sessionManager = new SessionManager(context);
+		Session session = sessionManager.getSession();
 
-		String key = ds.getTokenKey();
-		String secret = ds.getTokensSecret();
+		if (session != null) {
+			String key = session.getString(Session.KEY_TOKEN_KEY);
+			String secret = session.getString(Session.KEY_TOKEN_SECRET);
 
-		RemoteService remoteService = createRemoteService(key, secret);
-		return remoteService;
+			String url = session.getString(Session.KEY_SERVER_URL);
+
+			RemoteService remoteService = createRemoteService(url, key, secret);
+			return remoteService;
+		} else {
+			Settings settings = new Settings(context);
+			String url = settings.getEffectiveServerUrl();
+			return getRemoteService(url);
+		}
+
 	}
 
-	private static RemoteService createRemoteService(String username,
-			String password) {
+	private static RemoteService createRemoteService(String url,
+			String username, String password) {
 
 		Gson gson = new GsonBuilder()
 				.setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
@@ -59,7 +68,7 @@ public class RemoteServiceFactory {
 				.create();
 
 		RestAdapter.Builder builder = new RestAdapter.Builder();
-		builder.setEndpoint(DEFAULT_URL).setConverter(new GsonConverter(gson));
+		builder.setEndpoint(url).setConverter(new GsonConverter(gson));
 
 		if (username != null) {
 			final Header baseAuth = BasicScheme.authenticate(

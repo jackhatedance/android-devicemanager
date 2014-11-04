@@ -55,7 +55,7 @@ public class RegisterActivity extends ActionBarActivity {
 
 				try {
 					RemoteService remoteService = RemoteServiceFactory
-							.getRemoteService();
+							.getRemoteService(RegisterActivity.this);
 
 					User user = new User(username,password,firstName,lastName,email);
 					

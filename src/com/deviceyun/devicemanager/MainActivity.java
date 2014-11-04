@@ -23,7 +23,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.deviceyun.devicemanager.devicelist.DeviceListAdapter;
+import com.deviceyun.devicemanager.manager.Session;
 import com.deviceyun.devicemanager.manager.SessionManager;
+import com.deviceyun.devicemanager.preference.Settings;
 import com.deviceyun.devicemanager.remoteservice.RemoteService;
 import com.deviceyun.devicemanager.remoteservice.RemoteServiceFactory;
 import com.deviceyun.devicemanager.utils.Utils;
@@ -44,7 +46,7 @@ public class MainActivity extends ActionBarActivity {
 
 	public static String userId;
 
-	private SessionManager localDataStore;
+	private SessionManager sessionManager;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,18 +54,23 @@ public class MainActivity extends ActionBarActivity {
 		setContentView(R.layout.activity_main);
 
 		// check login
-		localDataStore = new SessionManager(this);
+		sessionManager = new SessionManager(this);
 		boolean isTokenValid = false;
-		userId = localDataStore.getUsername();
-		if (userId != null) {
+		Session session = sessionManager.getSession();
+		if (session != null) {
+			userId = session.getString(Session.KEY_USERNAME);
 			// test token, in case it is expired.
-			String key = localDataStore.getTokenKey();
-			String secret = localDataStore.getTokensSecret();
+			String key = session.getString(Session.KEY_TOKEN_KEY);
+			String secret = session.getString(Session.KEY_TOKEN_SECRET);
+
+			Settings settings = new Settings(MainActivity.this);
+			String url = settings.getEffectiveServerUrl();
 
 			RemoteService remoteService = new RemoteServiceFactory()
-					.getRemoteService(key, secret);
+					.getRemoteService(url, key, secret);
 
 			try {
+
 				User user = remoteService.getUser(userId);
 				isTokenValid = true;
 
@@ -241,6 +248,15 @@ public class MainActivity extends ActionBarActivity {
 		finish();
 	}
 
+	private void startSettingsActivity() {
+		// user is not logged in redirect him to Login Activity
+		Intent i = new Intent(this, SettingsActivity.class);
+
+		// Staring Login Activity
+		startActivity(i);
+
+	}
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -271,7 +287,7 @@ public class MainActivity extends ActionBarActivity {
 		int id = item.getItemId();
 		switch (item.getItemId()) {
 		case R.id.action_settings:
-
+			startSettingsActivity();
 			break;
 
 		case R.id.action_new:
@@ -282,13 +298,19 @@ public class MainActivity extends ActionBarActivity {
 
 		case R.id.action_logout:
 
-			SessionManager sm = new SessionManager(this);
-			if (sm.getUsername() != null) {
-				RemoteService rs = RemoteServiceFactory.getRemoteService(
-						sm.getTokenKey(), sm.getTokensSecret());
+			SessionManager sessionManager = new SessionManager(this);
+			Session session = sessionManager.getSession();
+			if (session != null) {
+
+				String key = session.getString(Session.KEY_TOKEN_KEY);
+				String secret = session.getString(Session.KEY_TOKEN_SECRET);
+				String url = session.getString(Session.KEY_SERVER_URL);
+
+				RemoteService remoteService = RemoteServiceFactory
+						.getRemoteService(url, key, secret);
 				try {
-					rs.destroyToken();
-					sm.removeUser();
+					remoteService.destroyToken();
+					sessionManager.destroySession();
 					startLoginActivity();
 				} catch (Exception e) {
 					e.printStackTrace();

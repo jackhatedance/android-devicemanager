@@ -1,0 +1,5 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <CheckBoxPreference android:enabled="true" android:disableDependentsState="false" android:title="Development Mode" android:key="developmentMode" android:shouldDisableView="false"/>
+    <EditTextPreference android:dependency="developmentMode" android:title="URL" android:key="serverUrl" android:defaultValue="http://www.driverstack.com/api/1.0/" android:selectable="true"/>
+
+</PreferenceScreen>

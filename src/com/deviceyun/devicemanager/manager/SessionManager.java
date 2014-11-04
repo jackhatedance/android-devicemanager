@@ -1,10 +1,6 @@
 package com.deviceyun.devicemanager.manager;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
@@ -18,66 +14,48 @@ public class SessionManager {
 	// Editor reference for Shared preferences
 	Editor editor;
 
-	// Context
-	Context _context;
-
 	// Shared pref mode
 	int PRIVATE_MODE = 0;
 
-	// User name (make variable public to access from outside)
-	public static final String KEY_USERNAME = "username";
-
-	public static final String KEY_TOKEN_KEY = "token_key";
-
-	public static final String KEY_TOKEN_SECRET = "token_secret";
-
-	// Email address (make variable public to access from outside)
-	public static final String KEY_EMAIL = "email";
+	Session session;
 
 	// Constructor
 	public SessionManager(Context context) {
-		this._context = context;
-		pref = _context.getSharedPreferences(PREFER_NAME, PRIVATE_MODE);
+
+		pref = context.getSharedPreferences(PREFER_NAME, PRIVATE_MODE);
 		editor = pref.edit();
+
+		if (pref.contains(Session.KEY_USERNAME))
+			session = new SessionImpl(pref);
 	}
 
-	public String getUsername() {
-		return pref.getString(KEY_USERNAME, null);
+	public boolean isLoggedIn() {
+
+		return session != null;
 	}
 
-	public String getTokenKey() {
-		return pref.getString(KEY_TOKEN_KEY, null);
-	}
+	public Session createSession(String username, String key, String secret,
+			String url) {
 
-	public String getTokensSecret() {
-		return pref.getString(KEY_TOKEN_SECRET, null);
-	}
+		session = new SessionImpl(pref);
 
-	// save current user to store
-	public void saveUser(String username, String tokenKey, String tokenSecret) {
-
-		editor.putString(KEY_USERNAME, username);
-		// Storing name in pref
-		editor.putString(KEY_TOKEN_KEY, tokenKey);
-
-		// Storing email in pref
-		editor.putString(KEY_TOKEN_SECRET, tokenSecret);
-
-		// commit changes
+		editor.putString(Session.KEY_USERNAME, username);
+		editor.putString(Session.KEY_TOKEN_KEY, key);
+		editor.putString(Session.KEY_TOKEN_SECRET, secret);
+		editor.putString(Session.KEY_SERVER_URL, url);
 		editor.commit();
+
+		return session;
 	}
 
-	/**
-	 * Clear session details
-	 * */
-	public void removeUser() {
+	public void destroySession() {
+		session.clear();
+		session = null;
+	}
 
-		// Clearing all user data from Shared Preferences
-		editor.remove(KEY_USERNAME);
-		editor.remove(KEY_TOKEN_KEY);
-		editor.remove(KEY_TOKEN_SECRET);
+	public Session getSession() {
+		return session;
 
-		editor.commit();
 	}
 
 }
