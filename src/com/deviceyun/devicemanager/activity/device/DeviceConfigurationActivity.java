@@ -1,4 +1,4 @@
-package com.deviceyun.devicemanager;
+package com.deviceyun.devicemanager.activity.device;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +20,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.deviceyun.devicemanager.R;
+import com.deviceyun.devicemanager.R.id;
+import com.deviceyun.devicemanager.R.layout;
+import com.deviceyun.devicemanager.R.menu;
+import com.deviceyun.devicemanager.activity.MainActivity;
 import com.deviceyun.devicemanager.remoteservice.RemoteService;
 import com.deviceyun.devicemanager.remoteservice.RemoteServiceFactory;
 import com.deviceyun.devicemanager.ui.DropdownList;
@@ -66,19 +71,21 @@ public class DeviceConfigurationActivity extends ActionBarActivity {
 		driverId = getIntent().getExtras().getString(
 				DeviceConfigurationActivity.EXTRA_DRIVER_ID);
 
-		new AsyncTask<Void, Void, Void>() {
-			List<DriverConfigurationDefinitionItem> defItems;
+		new AsyncTask<Void, Void, List<DriverConfigurationDefinitionItem>>() {
 
 			@Override
-			protected Void doInBackground(Void... params) {
-				defItems = remoteService.getDriverConfigurationDefinitionItems(
-						driverId, currentLocale.toString());
-				return null;
+			protected List<DriverConfigurationDefinitionItem> doInBackground(
+					Void... params) {
+				List<DriverConfigurationDefinitionItem> defItems = remoteService
+						.getDriverConfigurationDefinitionItems(driverId,
+								currentLocale.toString());
+				return defItems;
 			}
 
 			@Override
-			protected void onPostExecute(Void result) {
-				initUI(defItems);
+			protected void onPostExecute(
+					List<DriverConfigurationDefinitionItem> result) {
+				initUI(result);
 				super.onPostExecute(result);
 			}
 

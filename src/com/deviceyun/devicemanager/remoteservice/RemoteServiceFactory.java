@@ -11,9 +11,9 @@ import retrofit.RestAdapter;
 import retrofit.converter.GsonConverter;
 import android.content.Context;
 
-import com.deviceyun.devicemanager.manager.Session;
-import com.deviceyun.devicemanager.manager.SessionManager;
 import com.deviceyun.devicemanager.preference.Settings;
+import com.deviceyun.devicemanager.session.Session;
+import com.deviceyun.devicemanager.session.SessionManager;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

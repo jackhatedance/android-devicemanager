@@ -5,11 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.chainsaw.Main;
+
 import android.content.Context;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 public class DropdownList<T> {
+
+	public static final String NULL_KEY = "null";
 
 	protected ObjectToIdValue objectToIdValue;
 
@@ -20,6 +24,20 @@ public class DropdownList<T> {
 	private Spinner spinner;
 
 	public DropdownList(Context context, int resource, List<T> objects,
+			Spinner spinner, ObjectToIdValue objectToIdValue) {
+		init(context, resource, objects, spinner, objectToIdValue);
+	}
+
+	private DropdownList(Context context, int resource, List<T> objects,
+			T nullObject, Spinner spinner, ObjectToIdValue objectToIdValue) {
+		List objects2 = new ArrayList<T>();
+		objects2.add(nullObject);
+		objects2.addAll(objects);
+
+		init(context, resource, objects2, spinner, objectToIdValue);
+	}
+
+	private void init(Context context, int resource, List<T> objects,
 			Spinner spinner, ObjectToIdValue objectToIdValue) {
 
 		this.objects = objects;
@@ -70,5 +88,9 @@ public class DropdownList<T> {
 			return id;
 		} else
 			return null;
+	}
+
+	public void selectFirstItem(){
+		spinner.setSelection(0);
 	}
 }

@@ -1,4 +1,4 @@
-package com.deviceyun.devicemanager;
+package com.deviceyun.devicemanager.activity.device;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +17,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.deviceyun.devicemanager.R;
+import com.deviceyun.devicemanager.R.id;
+import com.deviceyun.devicemanager.R.layout;
+import com.deviceyun.devicemanager.R.menu;
+import com.deviceyun.devicemanager.activity.support.BaseActionBarActivity;
+import com.deviceyun.devicemanager.activity.support.Constants;
 import com.deviceyun.devicemanager.remoteservice.RemoteService;
 import com.deviceyun.devicemanager.remoteservice.RemoteServiceFactory;
 import com.deviceyun.devicemanager.ui.DropdownList;
@@ -30,14 +36,13 @@ import com.driverstack.yunos.remote.vo.FunctionalDevice;
 import com.driverstack.yunos.remote.vo.Model;
 import com.driverstack.yunos.remote.vo.Vendor;
 
-public class DeviceDetailActivity extends ActionBarActivity {
+public class DeviceDetailActivity extends BaseActionBarActivity {
 
 	public static final int REQUEST_DEVICE_CONFIG = 1;
-
-	private RemoteService remoteService;
-	private Locale currentLocale;
+	public static final int REQUEST_CHANGE_DEVICE = 2;
 
 	private Device device;
+
 	/**
 	 * hold value return from device config activity
 	 */
@@ -56,13 +61,15 @@ public class DeviceDetailActivity extends ActionBarActivity {
 	private Spinner model = null;
 	private DropdownList<Model> modelDropdownList = null;
 
-	private Spinner driver = null;
+	private Spinner spinnerDriver = null;
 	private DropdownList<Driver> driverDropdownList = null;
+	private Button buttonConfigureDriver;
 
-	private Spinner defaultFunctionalDevice = null;
+	private Spinner functionalDevice = null;
 	private DropdownList<FunctionalDevice> functionalDeviceDropdownList = null;
 
-	private Button buttonConfigure;
+	private String oldDriverId;
+	private String currentDriverId;
 
 	List<Vendor> vendors = null;
 	List<DeviceClass> deviceClasses = null;
@@ -83,35 +90,28 @@ public class DeviceDetailActivity extends ActionBarActivity {
 		location = (TextView) findViewById(R.id.location);
 		description = (TextView) findViewById(R.id.description);
 
-		driver = (Spinner) findViewById(R.id.spinnerDriver);
-		defaultFunctionalDevice = (Spinner) findViewById(R.id.spinnerDefaultFunctionalDevice);
+		spinnerDriver = (Spinner) findViewById(R.id.spinnerDriver);
+		buttonConfigureDriver = (Button) findViewById(R.id.buttonConfigureDriver);
+
+		functionalDevice = (Spinner) findViewById(R.id.spinnerDefaultFunctionalDevice);
 
 		device = (Device) getIntent().getExtras().get("device");
+		// used to determine whether user changed driver.
+		oldDriverId = device.getDriverId();
 
-		new AsyncTask<Void, Void, Void>() {
+		initEventListener();
 
-			@Override
-			protected Void doInBackground(Void... params) {
-				loadData();
-				return null;
-			}
+		// update simple fields, such as editText
+		updateView();
 
-			@Override
-			protected void onPostExecute(Void result) {
-				initUI();
-				super.onPostExecute(result);
-			}
-
-		}.execute();
+		// update dropdown list fields.
+		refreshVendorDropdownList();
 	}
 
 	private void loadData() {
 		// load data
-		remoteService = RemoteServiceFactory.getRemoteService(this);
-		currentLocale = Utils.getLocale(DeviceDetailActivity.this);
+
 		vendors = remoteService.getAllVendors(currentLocale.toString());
-		deviceClasses = remoteService.getDeviceClasses(device.getVendorId(),
-				currentLocale.toString());
 
 		if (device.getVendorId() != null) {
 			models = remoteService.getModels(device.getVendorId(),
@@ -131,30 +131,18 @@ public class DeviceDetailActivity extends ActionBarActivity {
 			functionalDevices = new ArrayList<FunctionalDevice>();
 	}
 
-	private void initUI() {
-		vendorDropdownList = new DropdownList<Vendor>(this,
-				android.R.layout.simple_spinner_item, vendors, vendor,
-				new ObjectToIdValue<Vendor>() {
-					@Override
-					public String getId(Vendor obj) {
-
-						return obj.getId();
-					}
-
-					@Override
-					public String getName(Vendor obj) {
-
-						return obj.getShortName();
-					}
-				});
+	private void initEventListener() {
 
 		vendor.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view,
 					int position, long id) {
+
+				device.setVendorId(vendorDropdownList.getSelectedObjectId());
+
 				refreshDeviceClassDropdownList();
-				refreshModelDropdownList();
+
 			}
 
 			@Override
@@ -164,28 +152,15 @@ public class DeviceDetailActivity extends ActionBarActivity {
 
 		});
 
-		deviceClassDropdownList = new DropdownList<DeviceClass>(this,
-				android.R.layout.simple_spinner_item, deviceClasses,
-				deviceClass, new ObjectToIdValue<DeviceClass>() {
-					@Override
-					public String getId(DeviceClass obj) {
-
-						return obj.getId();
-					}
-
-					@Override
-					public String getName(DeviceClass obj) {
-
-						return obj.getName();
-					}
-				});
-
 		deviceClass
 				.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
 					@Override
 					public void onItemSelected(AdapterView<?> parent,
 							View view, int position, long id) {
+
+						device.setDeviceClassId(deviceClassDropdownList
+								.getSelectedObjectId());
 
 						refreshModelDropdownList();
 					}
@@ -197,28 +172,12 @@ public class DeviceDetailActivity extends ActionBarActivity {
 
 				});
 
-		modelDropdownList = new DropdownList<Model>(DeviceDetailActivity.this,
-				android.R.layout.simple_spinner_item, models, model,
-				new ObjectToIdValue<Model>() {
-					@Override
-					public String getId(Model obj) {
-
-						return obj.getId();
-					}
-
-					@Override
-					public String getName(Model obj) {
-
-						return obj.getName();
-					}
-				});
-
 		model.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view,
 					int position, long id) {
-
+				device.setModelId(modelDropdownList.getSelectedObjectId());
 				refreshDriverDropdownList();
 			}
 
@@ -228,25 +187,26 @@ public class DeviceDetailActivity extends ActionBarActivity {
 			}
 
 		});
-		driverDropdownList = new DropdownList<Driver>(
-				DeviceDetailActivity.this,
-				android.R.layout.simple_spinner_item, drivers, driver,
-				new ObjectToIdValue<Driver>() {
-					@Override
-					public String getId(Driver obj) {
 
-						return obj.getId();
+		spinnerDriver
+				.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+					@Override
+					public void onItemSelected(AdapterView<?> parent,
+							View view, int position, long id) {
+						device.setDriverId(driverDropdownList
+								.getSelectedObjectId());
+						refreshFunctionalDeviceDropdownList();
 					}
 
 					@Override
-					public String getName(Driver obj) {
+					public void onNothingSelected(AdapterView<?> parent) {
 
-						return obj.toString();
 					}
+
 				});
 
-		buttonConfigure = (Button) findViewById(R.id.buttonConfigureDriver);
-		buttonConfigure.setOnClickListener(new View.OnClickListener() {
+		buttonConfigureDriver.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -301,29 +261,31 @@ public class DeviceDetailActivity extends ActionBarActivity {
 			}
 		});
 
-		functionalDeviceDropdownList = new DropdownList<FunctionalDevice>(
-				DeviceDetailActivity.this,
-				android.R.layout.simple_spinner_item, functionalDevices,
-				defaultFunctionalDevice,
-				new ObjectToIdValue<FunctionalDevice>() {
-					@Override
-					public String getId(FunctionalDevice obj) {
+		functionalDevice
+				.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
-						return String.valueOf(obj.getIndex());
+					@Override
+					public void onItemSelected(AdapterView<?> parent,
+							View view, int position, long id) {
+
+						int index = 0;
+						try {
+							index = Integer
+									.valueOf(functionalDeviceDropdownList
+											.getSelectedObjectId());
+						} catch (Exception e) {
+						}
+
+						device.setDefaultFunctionalDeviceIndex(index);
+
 					}
 
 					@Override
-					public String getName(FunctionalDevice obj) {
+					public void onNothingSelected(AdapterView<?> parent) {
 
-						String s = String.format("%s:%s",
-								obj.getOrganizationName(),
-								obj.getArtifactName());
-						return s;
 					}
+
 				});
-
-		updateView();
-
 	}
 
 	@Override
@@ -331,15 +293,21 @@ public class DeviceDetailActivity extends ActionBarActivity {
 
 		super.onActivityResult(requestCode, resultCode, data);
 
-		if (requestCode == REQUEST_DEVICE_CONFIG) {
+		switch (requestCode) {
+		case REQUEST_DEVICE_CONFIG:
+
 			if (resultCode == RESULT_OK) {
 				Object[] array = (Object[]) data
 						.getSerializableExtra(DeviceConfigurationActivity.EXTRA_DEVICE_CONFIGURATION_ITEMS);
+
+				// save driver configuration item
 				deviceConfigurationitems = new ArrayList<ConfigurationItem>();
 				for (Object ci : array)
 					deviceConfigurationitems.add((ConfigurationItem) ci);
 
 			}
+			break;
+
 		}
 	}
 
@@ -399,22 +367,67 @@ public class DeviceDetailActivity extends ActionBarActivity {
 
 	}
 
-	private void refreshDeviceClassDropdownList() {
+	private void refreshVendorDropdownList() {
 
-		// update model options
+		new AsyncTask<Void, Void, List<Vendor>>() {
+
+			@Override
+			protected List<Vendor> doInBackground(Void... params) {
+				List<Vendor> vendors = remoteService.getAllVendors(
+
+				currentLocale.toString());
+				return vendors;
+			}
+
+			@Override
+			protected void onPostExecute(List<Vendor> result) {
+
+				vendorDropdownList = new DropdownList<Vendor>(
+						DeviceDetailActivity.this,
+						android.R.layout.simple_spinner_item, result, vendor,
+						new ObjectToIdValue<Vendor>() {
+							@Override
+							public String getId(Vendor obj) {
+
+								return obj.getId();
+							}
+
+							@Override
+							public String getName(Vendor obj) {
+
+								return obj.getShortName();
+							}
+						});
+
+				if (vendorDropdownList.containsId(device.getVendorId()))
+					vendorDropdownList.setSelectedObjectById(device
+							.getVendorId());
+				else
+					device.setVendorId(vendorDropdownList.getSelectedObjectId());
+
+				super.onPostExecute(result);
+
+				refreshDeviceClassDropdownList();
+			}
+
+		}.execute();
+
+	}
+
+	private void refreshDeviceClassDropdownList() {
 
 		new AsyncTask<Void, Void, Void>() {
 
 			@Override
 			protected Void doInBackground(Void... params) {
 				deviceClasses = remoteService.getDeviceClasses(
-						vendorDropdownList.getSelectedObjectId(),
-						currentLocale.toString());
+						device.getVendorId(), currentLocale.toString());
 				return null;
 			}
 
 			@Override
 			protected void onPostExecute(Void result) {
+
 				deviceClassDropdownList = new DropdownList<DeviceClass>(
 						DeviceDetailActivity.this,
 						android.R.layout.simple_spinner_item, deviceClasses,
@@ -431,6 +444,15 @@ public class DeviceDetailActivity extends ActionBarActivity {
 								return obj.getName();
 							}
 						});
+
+				if (deviceClassDropdownList.containsId(device
+						.getDeviceClassId()))
+					deviceClassDropdownList.setSelectedObjectById(device
+							.getDeviceClassId());
+				else
+					device.setDeviceClassId(deviceClassDropdownList
+							.getSelectedObjectId());
+
 				super.onPostExecute(result);
 			}
 
@@ -443,15 +465,14 @@ public class DeviceDetailActivity extends ActionBarActivity {
 
 			@Override
 			protected Void doInBackground(Void... params) {
-				models = remoteService.getModels(
-						vendorDropdownList.getSelectedObjectId(),
-						deviceClassDropdownList.getSelectedObjectId(),
-						currentLocale.toString());
+				models = remoteService.getModels(device.getVendorId(),
+						device.getDeviceClassId(), currentLocale.toString());
 				return null;
 			}
 
 			@Override
 			protected void onPostExecute(Void result) {
+
 				modelDropdownList = new DropdownList<Model>(
 						DeviceDetailActivity.this,
 						android.R.layout.simple_spinner_item, models, model,
@@ -468,6 +489,13 @@ public class DeviceDetailActivity extends ActionBarActivity {
 								return obj.getName();
 							}
 						});
+
+				if (modelDropdownList.containsId(device.getModelId()))
+					modelDropdownList
+							.setSelectedObjectById(device.getModelId());
+				else
+					device.setModelId(modelDropdownList.getSelectedObjectId());
+
 				super.onPostExecute(result);
 			}
 
@@ -476,21 +504,27 @@ public class DeviceDetailActivity extends ActionBarActivity {
 	}
 
 	private void refreshDriverDropdownList() {
-		new AsyncTask<Void, Void, Void>() {
+		new AsyncTask<Void, Void, List<Driver>>() {
 
 			@Override
-			protected Void doInBackground(Void... params) {
-				drivers = remoteService.getDrivers(modelDropdownList
-						.getSelectedObjectId());
-				return null;
+			protected List<Driver> doInBackground(Void... params) {
+				List<Driver> drivers;
+
+				String modelId = device.getModelId();
+				if (modelId != null)
+					drivers = remoteService.getDrivers(modelId);
+				else
+					drivers = new ArrayList<Driver>();
+
+				return drivers;
 			}
 
 			@Override
-			protected void onPostExecute(Void result) {
+			protected void onPostExecute(List<Driver> result) {
 				driverDropdownList = new DropdownList<Driver>(
 						DeviceDetailActivity.this,
-						android.R.layout.simple_spinner_item, drivers, driver,
-						new ObjectToIdValue<Driver>() {
+						android.R.layout.simple_spinner_item, result,
+						spinnerDriver, new ObjectToIdValue<Driver>() {
 							@Override
 							public String getId(Driver obj) {
 
@@ -510,37 +544,89 @@ public class DeviceDetailActivity extends ActionBarActivity {
 
 	}
 
-	private void updateView() {
-		vendorDropdownList.setSelectedObjectById(device.getVendorId());
-		deviceClassDropdownList
-				.setSelectedObjectById(device.getDeviceClassId());
+	private void refreshFunctionalDeviceDropdownList() {
 
-		modelDropdownList.setSelectedObjectById(device.getModelId());
+		new AsyncTask<Void, Void, List<FunctionalDevice>>() {
+			@Override
+			protected List<FunctionalDevice> doInBackground(Void... params) {
+				List<FunctionalDevice> functionalDevices = null;
+				if (device.getId() != null && oldDriverId != null
+						&& !isDriverChanged())
+					functionalDevices = remoteService.getFunctionalDevices(
+							device.getId(), currentLocale.toString());
+				else {
+					functionalDevices = new ArrayList<FunctionalDevice>();
+					FunctionalDevice defaultFD = new FunctionalDevice("",
+							"Default", 0, "", "", "", "");
+					functionalDevices.add(defaultFD);
+				}
+				return functionalDevices;
+			}
+
+			@Override
+			protected void onPostExecute(List<FunctionalDevice> result) {
+				functionalDeviceDropdownList = new DropdownList<FunctionalDevice>(
+						DeviceDetailActivity.this,
+						android.R.layout.simple_spinner_item, result,
+						functionalDevice,
+						new ObjectToIdValue<FunctionalDevice>() {
+							@Override
+							public String getId(FunctionalDevice obj) {
+
+								return String.valueOf(obj.getIndex());
+							}
+
+							@Override
+							public String getName(FunctionalDevice obj) {
+
+								String s = String.format("%s:%s",
+										obj.getOrganizationName(),
+										obj.getArtifactName());
+								return s;
+							}
+						});
+				String fdId = String.valueOf(device
+						.getDefaultFunctionalDeviceIndex());
+
+				functionalDeviceDropdownList.setSelectedObjectById(fdId);
+
+				if (functionalDeviceDropdownList.containsId(String
+						.valueOf(device.getDefaultFunctionalDeviceIndex())))
+					functionalDeviceDropdownList.setSelectedObjectById(String
+							.valueOf(device.getDefaultFunctionalDeviceIndex()));
+				else {
+					int index = 0;
+					try {
+						index = Integer.valueOf(functionalDeviceDropdownList
+								.getSelectedObjectId());
+					} catch (Exception e) {
+					}
+					device.setDefaultFunctionalDeviceIndex(index);
+				}
+				super.onPostExecute(result);
+			}
+
+		}.execute();
+
+	}
+
+	private boolean isDriverChanged() {
+		return !oldDriverId.equals(device.getDriverId());
+	}
+
+	private void updateView() {
 
 		name.setText(device.getName());
 		location.setText(device.getLocation());
 		description.setText(device.getDescription());
-		if (device.getDriverId() != null)
-			driverDropdownList.setSelectedObjectById(device.getDriverId());
 
-		// spinnerDefaultFunctionalDevice
-		functionalDeviceDropdownList.setSelectedObjectById(String
-				.valueOf(device.getDefaultFunctionalDeviceIndex()));
 	}
 
 	private void updateModel() {
-		device.setDeviceClassId(deviceClassDropdownList.getSelectedObjectId());
-		device.setModelId(modelDropdownList.getSelectedObjectId());
 		device.setName(name.getText().toString());
 		device.setLocation(location.getText().toString());
 		device.setDescription(description.getText().toString());
-		device.setDriverId(driverDropdownList.getSelectedObjectId());
 
-		String selFuntionalDeviceId = functionalDeviceDropdownList
-				.getSelectedObjectId();
-		if (selFuntionalDeviceId != null)
-			device.setDefaultFunctionalDeviceIndex(Integer
-					.valueOf(functionalDeviceDropdownList.getSelectedObjectId()));
 	}
 
 	private void saveModel() {

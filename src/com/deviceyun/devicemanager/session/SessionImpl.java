@@ -1,4 +1,4 @@
-package com.deviceyun.devicemanager.manager;
+package com.deviceyun.devicemanager.session;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;

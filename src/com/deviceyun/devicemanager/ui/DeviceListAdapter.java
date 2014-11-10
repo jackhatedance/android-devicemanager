@@ -1,4 +1,4 @@
-package com.deviceyun.devicemanager.devicelist;
+package com.deviceyun.devicemanager.ui;
 
 import java.util.List;
 

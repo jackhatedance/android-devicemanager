@@ -1,13 +1,13 @@
-package com.deviceyun.devicemanager.operation_activity;
+package com.deviceyun.devicemanager.activity.operation;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import com.deviceyun.devicemanager.Constants;
 import com.deviceyun.devicemanager.R;
 import com.deviceyun.devicemanager.R.id;
 import com.deviceyun.devicemanager.R.layout;
 import com.deviceyun.devicemanager.R.menu;
+import com.deviceyun.devicemanager.activity.support.Constants;
 import com.deviceyun.devicemanager.remoteservice.RemoteService;
 import com.deviceyun.devicemanager.remoteservice.RemoteServiceFactory;
 import com.driverstack.yunos.remote.vo.Device;

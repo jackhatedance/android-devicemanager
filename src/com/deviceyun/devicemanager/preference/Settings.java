@@ -34,7 +34,7 @@ public class Settings {
 
 	public String getEffectiveServerUrl() {
 		if (getDevelopmentMode())
-			return preferences.getString(SERVER_URL, SERVER_URL_DEFAULT_VALUE);
+			return getServerUrl();
 		else
 			return SERVER_URL_DEFAULT_VALUE;
 	}

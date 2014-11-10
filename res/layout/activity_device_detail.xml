@@ -127,20 +127,25 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.25"
+                android:layout_weight="0.13"
                 android:text="@string/activity_device_detail_driver" />
 
             <Spinner
                 android:id="@+id/spinnerDriver"
-                android:layout_width="140dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.13" />
+                android:layout_width="118dp"
+                android:layout_height="wrap_content" />
 
             <Button
                 android:id="@+id/buttonConfigureDriver"
-                android:layout_width="50dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="..." />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
         </LinearLayout>
 
         <LinearLayout

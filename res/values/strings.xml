@@ -26,5 +26,8 @@
     <string name="activity_register_lastName">Last Name</string>
     <string name="activity_register_email">Email</string>
     <string name="password">Password</string>
+    <string name="action_ok">OK</string>
+    <string name="activity_device_detail_driver_control">Driver Control</string>
+    <string name="title_activity_pick_driver">PickDriverActivity</string>
 
 </resources>

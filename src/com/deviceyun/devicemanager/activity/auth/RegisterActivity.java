@@ -1,4 +1,4 @@
-package com.deviceyun.devicemanager;
+package com.deviceyun.devicemanager.activity.auth;
 
 import org.apache.log4j.lf5.PassingLogRecordFilter;
 
@@ -15,6 +15,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.deviceyun.devicemanager.R;
+import com.deviceyun.devicemanager.R.id;
+import com.deviceyun.devicemanager.R.layout;
+import com.deviceyun.devicemanager.R.menu;
 import com.deviceyun.devicemanager.remoteservice.RemoteService;
 import com.deviceyun.devicemanager.remoteservice.RemoteServiceFactory;
 import com.driverstack.yunos.remote.vo.User;

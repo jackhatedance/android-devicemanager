@@ -1,4 +1,4 @@
-package com.deviceyun.devicemanager;
+package com.deviceyun.devicemanager.activity;
 
 import java.util.List;
 import java.util.Locale;
@@ -22,12 +22,19 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.deviceyun.devicemanager.devicelist.DeviceListAdapter;
-import com.deviceyun.devicemanager.manager.Session;
-import com.deviceyun.devicemanager.manager.SessionManager;
+import com.deviceyun.devicemanager.R;
+import com.deviceyun.devicemanager.R.id;
+import com.deviceyun.devicemanager.R.layout;
+import com.deviceyun.devicemanager.R.menu;
+import com.deviceyun.devicemanager.activity.auth.LoginActivity;
+import com.deviceyun.devicemanager.activity.device.DeviceDetailActivity;
+import com.deviceyun.devicemanager.activity.support.Constants;
 import com.deviceyun.devicemanager.preference.Settings;
 import com.deviceyun.devicemanager.remoteservice.RemoteService;
 import com.deviceyun.devicemanager.remoteservice.RemoteServiceFactory;
+import com.deviceyun.devicemanager.session.Session;
+import com.deviceyun.devicemanager.session.SessionManager;
+import com.deviceyun.devicemanager.ui.DeviceListAdapter;
 import com.deviceyun.devicemanager.utils.Utils;
 import com.driverstack.yunos.remote.vo.Device;
 import com.driverstack.yunos.remote.vo.FunctionalDevice;
