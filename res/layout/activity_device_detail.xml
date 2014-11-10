@@ -70,14 +70,16 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="left"
                 android:layout_weight="0.25"
                 android:text="@string/activity_device_detail_name" />
 
             <EditText
                 android:id="@+id/name1"
-                android:layout_width="210dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.05"
+                android:layout_gravity="right"
+                android:layout_weight="0.75"
                 android:ems="10" />
         </LinearLayout>
 
@@ -94,10 +96,12 @@
 
             <EditText
                 android:id="@+id/location"
-                android:layout_width="210dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.05"
+                android:layout_gravity="right"
+                android:layout_weight="0.75"
                 android:ems="10" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -108,15 +112,18 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="left"
                 android:layout_weight="0.25"
                 android:text="@string/activity_device_detail_description" />
 
             <EditText
                 android:id="@+id/description"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.07"
+                android:layout_gravity="right"
+                android:layout_weight="0.75"
                 android:ems="10" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -127,25 +134,32 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.13"
+                android:layout_gravity="left"
+                android:layout_weight="0.25"
                 android:text="@string/activity_device_detail_driver" />
 
-            <Spinner
-                android:id="@+id/spinnerDriver"
-                android:layout_width="118dp"
-                android:layout_height="wrap_content" />
-
-            <Button
-                android:id="@+id/buttonConfigureDriver"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="..." />
-        </LinearLayout>
+                android:layout_gravity="right"
+                android:layout_weight="0.75"
+                android:orientation="horizontal" >
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+                <Spinner
+                    android:id="@+id/spinnerDriver"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.80" />
+
+                <Button
+                    android:id="@+id/buttonConfigureDriver"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_weight="0.20"
+                    android:text="..." />
+
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
@@ -156,14 +170,17 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.19"
+                android:layout_gravity="left"
+                android:layout_weight="0.25"
                 android:text="@string/activity_device_detail_default_functional_device" />
 
             <Spinner
                 android:id="@+id/spinnerDefaultFunctionalDevice"
-                android:layout_width="140dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.18" />
+                android:layout_gravity="right"
+                android:layout_weight="0.75" />
+
         </LinearLayout>
     </LinearLayout>
 
