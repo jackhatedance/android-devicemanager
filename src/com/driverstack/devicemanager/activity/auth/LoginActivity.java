@@ -1,6 +1,9 @@
 package com.driverstack.devicemanager.activity.auth;
 
+import java.util.List;
+
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -12,17 +15,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.driverstack.devicemanager.R;
-import com.driverstack.devicemanager.R.id;
-import com.driverstack.devicemanager.R.layout;
-import com.driverstack.devicemanager.R.menu;
 import com.driverstack.devicemanager.activity.MainActivity;
 import com.driverstack.devicemanager.activity.SettingsActivity;
 import com.driverstack.devicemanager.preference.Settings;
 import com.driverstack.devicemanager.remoteservice.RemoteService;
 import com.driverstack.devicemanager.remoteservice.RemoteServiceFactory;
-import com.driverstack.devicemanager.session.Session;
 import com.driverstack.devicemanager.session.SessionManager;
 import com.driverstack.yunos.remote.vo.AccessToken;
+import com.driverstack.yunos.remote.vo.Vendor;
 
 public class LoginActivity extends ActionBarActivity {
 
@@ -50,26 +50,49 @@ public class LoginActivity extends ActionBarActivity {
 			public void onClick(View v) {
 				// login on server, get token key, save to local data store.
 				// remoteService.
-				String username = textViewUsername.getText().toString().trim();
-				String password = textViewPassword.getText().toString().trim();
+				final String username = textViewUsername.getText().toString()
+						.trim();
+				final String password = textViewPassword.getText().toString()
+						.trim();
 
 				Settings settings = new Settings(LoginActivity.this);
-				String url = settings.getEffectiveServerUrl();
-				try {
-					RemoteService remoteService = RemoteServiceFactory
-							.getRemoteService(url, username, password);
+				final String url = settings.getEffectiveServerUrl();
 
-					AccessToken accessToken = remoteService.requestAccessToken();
+				new AsyncTask<Void, Void, AccessToken>() {
 
-					sessionManager.createSession(username, accessToken.getKey(),
-							accessToken.getSecret(), url);
+					@Override
+					protected AccessToken doInBackground(Void... params) {
+						try {
 
-					startMainActivity();
-				} catch (Exception e) {
-					Toast.makeText(getApplicationContext(),
-							"login failure:" + e.getLocalizedMessage(),
-							Toast.LENGTH_LONG).show();
-				}
+							RemoteService remoteService = RemoteServiceFactory
+									.getRemoteService(url, username, password);
+
+							AccessToken accessToken = remoteService
+									.requestAccessToken();
+
+							return accessToken;
+
+						} catch (Exception e) {
+							Toast.makeText(getApplicationContext(),
+									"server error:" + e.getLocalizedMessage(),
+									Toast.LENGTH_LONG).show();
+						}
+
+						return null;
+					}
+
+					@Override
+					protected void onPostExecute(AccessToken result) {
+						AccessToken accessToken = result;
+						sessionManager.createSession(username,
+								accessToken.getKey(), accessToken.getSecret(),
+								url);
+
+						startMainActivity();
+					}
+
+				}.execute();
+
 			}
 		});
 

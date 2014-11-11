@@ -60,9 +60,11 @@ public class MainActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		// check login
+		currentLocale = Utils.getLocale(this);
+		remoteService = RemoteServiceFactory.getRemoteService(this);
+
 		sessionManager = new SessionManager(this);
-		boolean isTokenValid = false;
+
 		Session session = sessionManager.getSession();
 		if (session != null) {
 			userId = session.getString(Session.KEY_USERNAME);
@@ -73,27 +75,43 @@ public class MainActivity extends ActionBarActivity {
 			Settings settings = new Settings(MainActivity.this);
 			String url = settings.getEffectiveServerUrl();
 
-			RemoteService remoteService = new RemoteServiceFactory()
+			final RemoteService remoteService = new RemoteServiceFactory()
 					.getRemoteService(url, key, secret);
 
-			try {
+			new AsyncTask<Void, Void, Boolean>() {
+				@Override
+				protected Boolean doInBackground(Void... params) {
 
-				User user = remoteService.getUser(userId);
-				isTokenValid = true;
+					try {
+						User user = remoteService.getUser(userId);
+						return true;
 
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					return false;
+				}
 
-		}
-		if (!isTokenValid) {
+				@Override
+				protected void onPostExecute(Boolean result) {
+					super.onPostExecute(result);
+
+					if (result)
+						loadDeviceListData();
+					else
+						startLoginActivity();
+
+				}
+
+			}.execute();
+		} else {
 			startLoginActivity();
 			return;
 		}
 
-		currentLocale = Utils.getLocale(this);
-		remoteService = RemoteServiceFactory.getRemoteService(this);
+	}
 
+	private void loadDeviceListData() {
 		new AsyncTask<Void, Void, Void>() {
 
 			@Override
@@ -105,12 +123,13 @@ public class MainActivity extends ActionBarActivity {
 
 			@Override
 			protected void onPostExecute(Void result) {
-				initUI();
 				super.onPostExecute(result);
+
+				initUI();
+
 			}
 
 		}.execute();
-
 	}
 
 	private void initUI() {
@@ -305,29 +324,49 @@ public class MainActivity extends ActionBarActivity {
 
 		case R.id.action_logout:
 
-			SessionManager sessionManager = new SessionManager(this);
-			Session session = sessionManager.getSession();
-			if (session != null) {
-
-				String key = session.getString(Session.KEY_TOKEN_KEY);
-				String secret = session.getString(Session.KEY_TOKEN_SECRET);
-				String url = session.getString(Session.KEY_SERVER_URL);
-
-				RemoteService remoteService = RemoteServiceFactory
-						.getRemoteService(url, key, secret);
-				try {
-					remoteService.destroyToken();
-					sessionManager.destroySession();
-					startLoginActivity();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
+			logout();
 
 			break;
 		}
 
 		return super.onOptionsItemSelected(item);
+	}
+
+	private void logout() {
+		new AsyncTask<Void, Void, Void>() {
+
+			@Override
+			protected Void doInBackground(Void... params) {
+				SessionManager sessionManager = new SessionManager(
+						MainActivity.this);
+				Session session = sessionManager.getSession();
+				if (session != null) {
+
+					String key = session.getString(Session.KEY_TOKEN_KEY);
+					String secret = session.getString(Session.KEY_TOKEN_SECRET);
+					String url = session.getString(Session.KEY_SERVER_URL);
+
+					RemoteService remoteService = RemoteServiceFactory
+							.getRemoteService(url, key, secret);
+					try {
+						remoteService.destroyToken();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				return null;
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				super.onPostExecute(result);
+
+				sessionManager.destroySession();
+				startLoginActivity();
+
+			}
+
+		}.execute();
 	}
 
 	private void updateDeviceListView() {
