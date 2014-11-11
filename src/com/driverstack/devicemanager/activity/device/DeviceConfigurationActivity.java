@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,25 +20,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.driverstack.devicemanager.R;
-import com.driverstack.devicemanager.R.id;
-import com.driverstack.devicemanager.R.layout;
-import com.driverstack.devicemanager.R.menu;
 import com.driverstack.devicemanager.activity.MainActivity;
-import com.driverstack.devicemanager.remoteservice.RemoteService;
-import com.driverstack.devicemanager.remoteservice.RemoteServiceFactory;
+import com.driverstack.devicemanager.activity.support.BaseActionBarActivity;
 import com.driverstack.devicemanager.ui.DropdownList;
 import com.driverstack.devicemanager.ui.ObjectToIdValue;
 import com.driverstack.devicemanager.ui.valuefield.DropdownListValueField;
 import com.driverstack.devicemanager.ui.valuefield.EditTextValueField;
 import com.driverstack.devicemanager.ui.valuefield.ValueField;
-import com.driverstack.devicemanager.utils.Utils;
 import com.driverstack.yunos.driver.config.ConfigurationItemPrimaryType;
 import com.driverstack.yunos.driver.config.ConfigurationItemType;
 import com.driverstack.yunos.remote.vo.ConfigurationItem;
 import com.driverstack.yunos.remote.vo.DriverConfigurationDefinitionItem;
 import com.driverstack.yunos.remote.vo.FunctionalDevice;
 
-public class DeviceConfigurationActivity extends ActionBarActivity {
+public class DeviceConfigurationActivity extends BaseActionBarActivity {
 
 	public final static String EXTRA_DEVICE_ID = "deviceId";
 	public final static String EXTRA_DRIVER_ID = "driverId";
@@ -49,7 +43,6 @@ public class DeviceConfigurationActivity extends ActionBarActivity {
 
 	private String deviceId;
 	private String driverId;
-	private RemoteService remoteService;
 
 	private List<ConfigurationItem> deviceConfigurationItems;
 	private Map<String, ConfigurationItem> deviceConfigurationMap;
@@ -62,9 +55,6 @@ public class DeviceConfigurationActivity extends ActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_device_configuration);
-
-		currentLocale = Utils.getLocale(this);
-		remoteService = RemoteServiceFactory.getRemoteService(this);
 
 		deviceId = getIntent().getExtras().getString(
 				DeviceConfigurationActivity.EXTRA_DEVICE_ID);

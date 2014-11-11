@@ -3,26 +3,20 @@ package com.driverstack.devicemanager.activity.operation;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.driverstack.devicemanager.R;
-import com.driverstack.devicemanager.R.id;
-import com.driverstack.devicemanager.R.layout;
-import com.driverstack.devicemanager.R.menu;
-import com.driverstack.devicemanager.activity.support.Constants;
-import com.driverstack.devicemanager.remoteservice.RemoteService;
-import com.driverstack.devicemanager.remoteservice.RemoteServiceFactory;
-import com.driverstack.yunos.remote.vo.Device;
-import com.driverstack.yunos.remote.vo.FunctionalDevice;
-
-import android.support.v7.app.ActionBarActivity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
-import android.widget.Spinner;
 import android.widget.ToggleButton;
 
-public class SwitchActivity extends ActionBarActivity {
+import com.driverstack.devicemanager.R;
+import com.driverstack.devicemanager.activity.support.BaseActionBarActivity;
+import com.driverstack.devicemanager.activity.support.Constants;
+import com.driverstack.devicemanager.remoteservice.RemoteService;
+import com.driverstack.yunos.remote.vo.FunctionalDevice;
+
+public class SwitchActivity extends BaseActionBarActivity {
 
 	private ToggleButton button1;
 
@@ -32,8 +26,6 @@ public class SwitchActivity extends ActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_switch);
-
-		remoteService = RemoteServiceFactory.getRemoteService(this);
 
 		final FunctionalDevice fd = (FunctionalDevice) getIntent().getExtras()
 				.get("functionalDevice");
@@ -47,24 +39,24 @@ public class SwitchActivity extends ActionBarActivity {
 					boolean isChecked) {
 				final String operation = isChecked ? "on" : "off";
 				final Map<String, String> paramMap = new HashMap<String, String>();
-				
+
 				new AsyncTask<Void, Void, Void>() {
 
 					@Override
 					protected Void doInBackground(Void... params) {
-						remoteService.operateDevice(Constants.APP_ID,fd.getDeviceId(), fd.getIndex(),
-								operation, paramMap);
+						remoteService.operateDevice(Constants.APP_ID,
+								fd.getDeviceId(), fd.getIndex(), operation,
+								paramMap);
 						return null;
 					}
 
 					@Override
 					protected void onPostExecute(Void result) {
-						 
+
 						super.onPostExecute(result);
 					}
 
 				}.execute();
-				
 
 			}
 		});

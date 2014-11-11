@@ -1,7 +1,5 @@
 package com.driverstack.devicemanager.activity.auth;
 
-import java.util.List;
-
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -22,7 +20,6 @@ import com.driverstack.devicemanager.remoteservice.RemoteService;
 import com.driverstack.devicemanager.remoteservice.RemoteServiceFactory;
 import com.driverstack.devicemanager.session.SessionManager;
 import com.driverstack.yunos.remote.vo.AccessToken;
-import com.driverstack.yunos.remote.vo.Vendor;
 
 public class LoginActivity extends ActionBarActivity {
 

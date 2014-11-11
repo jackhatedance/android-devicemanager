@@ -28,6 +28,7 @@ import com.driverstack.devicemanager.R.layout;
 import com.driverstack.devicemanager.R.menu;
 import com.driverstack.devicemanager.activity.auth.LoginActivity;
 import com.driverstack.devicemanager.activity.device.DeviceDetailActivity;
+import com.driverstack.devicemanager.activity.support.BaseActionBarActivity;
 import com.driverstack.devicemanager.activity.support.Constants;
 import com.driverstack.devicemanager.preference.Settings;
 import com.driverstack.devicemanager.remoteservice.RemoteService;
@@ -40,10 +41,7 @@ import com.driverstack.yunos.remote.vo.Device;
 import com.driverstack.yunos.remote.vo.FunctionalDevice;
 import com.driverstack.yunos.remote.vo.User;
 
-public class MainActivity extends ActionBarActivity {
-
-	private RemoteService remoteService;
-	private Locale currentLocale;
+public class MainActivity extends BaseActionBarActivity {
 
 	private static int REQUEST_DEVICE_DETAIL = 1;
 
@@ -59,9 +57,6 @@ public class MainActivity extends ActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
-		currentLocale = Utils.getLocale(this);
-		remoteService = RemoteServiceFactory.getRemoteService(this);
 
 		sessionManager = new SessionManager(this);
 

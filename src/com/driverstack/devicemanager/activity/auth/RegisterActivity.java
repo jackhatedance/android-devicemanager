@@ -5,6 +5,7 @@ import org.apache.log4j.lf5.PassingLogRecordFilter;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -57,36 +58,56 @@ public class RegisterActivity extends ActionBarActivity {
 				String lastName = editTextLastName.getText().toString().trim();
 				String email = editTextEmail.getText().toString().trim();
 
-				try {
-					RemoteService remoteService = RemoteServiceFactory
-							.getRemoteService(RegisterActivity.this);
+				final RemoteService remoteService = RemoteServiceFactory
+						.getRemoteService(RegisterActivity.this);
 
-					User user = new User(username,password,firstName,lastName,email);
-					
-					remoteService.createUser(user);
+				User user = new User(username, password, firstName, lastName,
+						email);
 
-					// msg box
-					AlertDialog.Builder dlgAlert = new AlertDialog.Builder(
-							RegisterActivity.this);
+				new AsyncTask<User, Void, Throwable>() {
 
-					dlgAlert.setMessage("account created successfully. press OK to login.");
-					dlgAlert.setTitle("Congratulations");
-					dlgAlert.setPositiveButton("Ok",
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int which) {
-									//
-								}
-							});
-					dlgAlert.setCancelable(true);
-					dlgAlert.create().show();
+					@Override
+					protected Throwable doInBackground(User... params) {
+						try {
+							remoteService.createUser(params[0]);
+							return null;
+						} catch (Exception e) {
+							return e;
 
-					startLoginActivity();
-				} catch (Exception e) {
-					Toast.makeText(getApplicationContext(),
-							"create failure:" + e.getLocalizedMessage(),
-							Toast.LENGTH_LONG).show();
-				}
+						}
+
+					}
+
+					protected void onPostExecute(Throwable result) {
+						if (result == null) {
+							// msg box
+							AlertDialog.Builder dlgAlert = new AlertDialog.Builder(
+									RegisterActivity.this);
+
+							dlgAlert.setMessage("account created successfully. press OK to login.");
+							dlgAlert.setTitle("Congratulations");
+							dlgAlert.setPositiveButton("Ok",
+									new DialogInterface.OnClickListener() {
+										public void onClick(
+												DialogInterface dialog,
+												int which) {
+											startLoginActivity();
+										}
+									});
+							dlgAlert.setCancelable(true);
+							dlgAlert.create().show();
+
+							
+						} else {
+							Toast.makeText(
+									getApplicationContext(),
+									"create failure:"
+											+ result.getLocalizedMessage(),
+									Toast.LENGTH_LONG).show();
+						}
+					};
+
+				}.execute(user);
 
 			}
 		});
