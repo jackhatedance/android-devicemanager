@@ -4,49 +4,49 @@
     <!-- These settings headers are only used on tablets. -->
 
     <header
-        android:fragment="com.deviceyun.devicemanager.DeviceSettingsActivity$GeneralPreferenceFragment"
+        android:fragment="com.driverstack.devicemanager.DeviceSettingsActivity$GeneralPreferenceFragment"
         android:title="@string/pref_header_general" />
     <header
-        android:fragment="com.deviceyun.devicemanager.DeviceSettingsActivity$NotificationPreferenceFragment"
+        android:fragment="com.driverstack.devicemanager.DeviceSettingsActivity$NotificationPreferenceFragment"
         android:title="@string/pref_header_notifications" />
     <header
-        android:fragment="com.deviceyun.devicemanager.DeviceSettingsActivity$DataSyncPreferenceFragment"
+        android:fragment="com.driverstack.devicemanager.DeviceSettingsActivity$DataSyncPreferenceFragment"
         android:title="@string/pref_header_data_sync" />
 
     <!-- These settings headers are only used on tablets. -->
 
     <header
-        android:fragment="com.deviceyun.devicemanager.UserSettingsActivity$GeneralPreferenceFragment"
+        android:fragment="com.driverstack.devicemanager.UserSettingsActivity$GeneralPreferenceFragment"
         android:title="@string/pref_header_general" />
     <header
-        android:fragment="com.deviceyun.devicemanager.UserSettingsActivity$NotificationPreferenceFragment"
+        android:fragment="com.driverstack.devicemanager.UserSettingsActivity$NotificationPreferenceFragment"
         android:title="@string/pref_header_notifications" />
     <header
-        android:fragment="com.deviceyun.devicemanager.UserSettingsActivity$DataSyncPreferenceFragment"
+        android:fragment="com.driverstack.devicemanager.UserSettingsActivity$DataSyncPreferenceFragment"
         android:title="@string/pref_header_data_sync" />
 
     <!-- These settings headers are only used on tablets. -->
 
     <header
-        android:fragment="com.deviceyun.devicemanager.SettingsActivity$GeneralPreferenceFragment"
+        android:fragment="com.driverstack.devicemanager.SettingsActivity$GeneralPreferenceFragment"
         android:title="@string/pref_header_general" />
     <header
-        android:fragment="com.deviceyun.devicemanager.SettingsActivity$NotificationPreferenceFragment"
+        android:fragment="com.driverstack.devicemanager.SettingsActivity$NotificationPreferenceFragment"
         android:title="@string/pref_header_notifications" />
     <header
-        android:fragment="com.deviceyun.devicemanager.SettingsActivity$DataSyncPreferenceFragment"
+        android:fragment="com.driverstack.devicemanager.SettingsActivity$DataSyncPreferenceFragment"
         android:title="@string/pref_header_data_sync" />
 
     <!-- These settings headers are only used on tablets. -->
 
     <header
-        android:fragment="com.deviceyun.devicemanager.SettingsActivity$GeneralPreferenceFragment"
+        android:fragment="com.driverstack.devicemanager.SettingsActivity$GeneralPreferenceFragment"
         android:title="@string/pref_header_general" />
     <header
-        android:fragment="com.deviceyun.devicemanager.SettingsActivity$NotificationPreferenceFragment"
+        android:fragment="com.driverstack.devicemanager.SettingsActivity$NotificationPreferenceFragment"
         android:title="@string/pref_header_notifications" />
     <header
-        android:fragment="com.deviceyun.devicemanager.SettingsActivity$DataSyncPreferenceFragment"
+        android:fragment="com.driverstack.devicemanager.SettingsActivity$DataSyncPreferenceFragment"
         android:title="@string/pref_header_data_sync" />
 
 </preference-headers>

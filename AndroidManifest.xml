@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.deviceyun.devicemanager"
+    package="com.driverstack.devicemanager"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -16,7 +16,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.deviceyun.devicemanager.activity.MainActivity"
+            android:name="com.driverstack.devicemanager.activity.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,15 +33,15 @@
             android:label="@string/title_activity_user_settings" >
         </activity>
         <activity
-            android:name="com.deviceyun.devicemanager.activity.device.DeviceDetailActivity"
+            android:name="com.driverstack.devicemanager.activity.device.DeviceDetailActivity"
             android:label="@string/title_activity_device_detail" >
         </activity>
         <activity
-            android:name="com.deviceyun.devicemanager.activity.device.DeviceConfigurationActivity"
+            android:name="com.driverstack.devicemanager.activity.device.DeviceConfigurationActivity"
             android:label="@string/title_activity_device_configuration" >
         </activity>
         <activity
-            android:name="com.deviceyun.devicemanager.activity.operation.IrTransmitterActivity"
+            android:name="com.driverstack.devicemanager.activity.operation.IrTransmitterActivity"
             android:label="@string/title_activity_ir_transmitter" >
             <intent-filter>
                 <action android:name="com.driverstack.devicemanager.intent.action.OPERATE" />
@@ -52,7 +52,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.deviceyun.devicemanager.activity.operation.SwitchActivity"
+            android:name="com.driverstack.devicemanager.activity.operation.SwitchActivity"
             android:label="@string/title_activity_switch" >
             <intent-filter>
                 <action android:name="com.driverstack.devicemanager.intent.action.OPERATE" />
@@ -64,19 +64,19 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.deviceyun.devicemanager.activity.auth.LoginActivity"
+            android:name="com.driverstack.devicemanager.activity.auth.LoginActivity"
             android:label="@string/title_activity_login1" >
         </activity>
         <activity
-            android:name="com.deviceyun.devicemanager.activity.SettingsActivity"
+            android:name="com.driverstack.devicemanager.activity.SettingsActivity"
             android:label="@string/title_activity_settings" >
         </activity>
         <activity 
-            android:name="com.deviceyun.devicemanager.activity.auth.RegisterActivity"
+            android:name="com.driverstack.devicemanager.activity.auth.RegisterActivity"
             android:label="@string/title_activity_register" >
         </activity>
         <activity
-            android:name="com.deviceyun.devicemanager.activity.device.DriverActivity"
+            android:name="com.driverstack.devicemanager.activity.device.DriverActivity"
             android:label="@string/title_activity_pick_driver" >
         </activity>
     </application>

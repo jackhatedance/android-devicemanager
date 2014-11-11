@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.deviceyun.devicemanager.activity.support.DriverActivity" >
+    tools:context="com.driverstack.devicemanager.activity.support.DriverActivity" >
 
     <TextView
         android:id="@+id/textView1"

@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.deviceyun.devicemanager.SwitchActivity" >
+    tools:context="com.driverstack.devicemanager.SwitchActivity" >
 
     <item
         android:id="@+id/action_settings"
