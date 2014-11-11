@@ -329,30 +329,36 @@ public class DeviceDetailActivity extends BaseActionBarActivity {
 		} else if (id == R.id.action_accept) {
 
 			updateModel();
-			try {
-				new AsyncTask<Void, Void, Void>() {
 
-					@Override
-					protected Void doInBackground(Void... params) {
+			new AsyncTask<Void, Void, Exception>() {
+
+				@Override
+				protected Exception doInBackground(Void... params) {
+					try {
 						saveModel();
 						return null;
+					} catch (Exception e) {
+						return e;
 					}
 
-					@Override
-					protected void onPostExecute(Void result) {
+				}
+
+				@Override
+				protected void onPostExecute(Exception result) {
+
+					if (result == null) {
 						setResult(RESULT_OK);
 
 						finish();
-						super.onPostExecute(result);
+					} else {
+						Toast.makeText(DeviceDetailActivity.this,
+								"saved failed:" + result.getLocalizedMessage(),
+								Toast.LENGTH_SHORT).show();
 					}
+					super.onPostExecute(result);
+				}
 
-				}.execute();
-
-			} catch (Exception e) {
-				Toast.makeText(DeviceDetailActivity.this,
-						"saved failed:" + e.getLocalizedMessage(),
-						Toast.LENGTH_SHORT).show();
-			}
+			}.execute();
 
 			return true;
 		} else if (id == R.id.action_cancel) {
@@ -537,6 +543,13 @@ public class DeviceDetailActivity extends BaseActionBarActivity {
 								return obj.toString();
 							}
 						});
+
+				if (driverDropdownList.containsId(device.getDriverId()))
+					driverDropdownList.setSelectedObjectById(device
+							.getDriverId());
+				else
+					device.setDriverId(driverDropdownList.getSelectedObjectId());
+
 				super.onPostExecute(result);
 			}
 

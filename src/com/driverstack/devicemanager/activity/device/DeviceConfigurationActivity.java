@@ -49,7 +49,7 @@ public class DeviceConfigurationActivity extends BaseActionBarActivity {
 
 	private Map<String, ValueField> fieldMap;
 
-	private Locale currentLocale;
+	 
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
