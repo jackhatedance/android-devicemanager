@@ -20,7 +20,7 @@ public class SwitchActivity extends BaseActionBarActivity {
 
 	private ToggleButton button1;
 
-	private RemoteService remoteService;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
