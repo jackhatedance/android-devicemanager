@@ -18,6 +18,7 @@ import com.driverstack.devicemanager.activity.SettingsActivity;
 import com.driverstack.devicemanager.preference.Settings;
 import com.driverstack.devicemanager.remoteservice.RemoteService;
 import com.driverstack.devicemanager.remoteservice.RemoteServiceFactory;
+import com.driverstack.devicemanager.remoteservice.UnauthorizedException;
 import com.driverstack.devicemanager.session.SessionManager;
 import com.driverstack.yunos.remote.vo.AccessToken;
 
@@ -55,10 +56,9 @@ public class LoginActivity extends ActionBarActivity {
 				Settings settings = new Settings(LoginActivity.this);
 				final String url = settings.getEffectiveServerUrl();
 
-				new AsyncTask<Void, Void, AccessToken>() {
-
+				new AsyncTask<Void, Void, Throwable>() {
 					@Override
-					protected AccessToken doInBackground(Void... params) {
+					protected Throwable doInBackground(Void... params) {
 						try {
 
 							RemoteService remoteService = RemoteServiceFactory
@@ -66,28 +66,35 @@ public class LoginActivity extends ActionBarActivity {
 
 							AccessToken accessToken = remoteService
 									.requestAccessToken();
-
-							return accessToken;
+							sessionManager.createSession(username,
+									accessToken.getKey(),
+									accessToken.getSecret(), url);
 
 						} catch (Exception e) {
-							Toast.makeText(getApplicationContext(),
-									"server error:" + e.getLocalizedMessage(),
-									Toast.LENGTH_LONG).show();
+							return e;
 						}
 
 						return null;
 					}
 
-					@Override
-					protected void onPostExecute(AccessToken result) {
-						AccessToken accessToken = result;
-						sessionManager.createSession(username,
-								accessToken.getKey(), accessToken.getSecret(),
-								url);
+					protected void onPostExecute(Throwable result) {
 
-						startMainActivity();
-					}
+						if (result == null) {
 
+							startMainActivity();
+						} else {
+							if (result instanceof UnauthorizedException) {
+								Toast.makeText(getApplicationContext(),
+										"Password or username is wrong.",
+										Toast.LENGTH_LONG).show();
+							} else {
+								Toast.makeText(getApplicationContext(),
+
+								"server error:" + result.getLocalizedMessage(),
+										Toast.LENGTH_LONG).show();
+							}
+						}
+					};
 				}.execute();
 
 			}

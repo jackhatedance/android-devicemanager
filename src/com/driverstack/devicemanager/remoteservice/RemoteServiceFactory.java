@@ -6,8 +6,11 @@ import org.apache.http.Header;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.impl.auth.BasicScheme;
 
+import retrofit.ErrorHandler;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 import retrofit.converter.GsonConverter;
 import android.content.Context;
 
@@ -86,6 +89,19 @@ public class RemoteServiceFactory {
 			};
 			builder.setRequestInterceptor(AuthIntercepter);
 		}
+
+		builder.setErrorHandler(new ErrorHandler() {
+
+			@Override
+			public Throwable handleError(RetrofitError error) {
+
+				Response r = error.getResponse();
+				if (r != null && r.getStatus() == 401) {
+					return new UnauthorizedException(error);
+				}
+				return error;
+			}
+		});
 
 		RestAdapter restAdapter = builder.build();
 
