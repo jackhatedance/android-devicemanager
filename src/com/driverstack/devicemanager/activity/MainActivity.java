@@ -26,6 +26,7 @@ import com.driverstack.devicemanager.R;
 import com.driverstack.devicemanager.R.id;
 import com.driverstack.devicemanager.R.layout;
 import com.driverstack.devicemanager.R.menu;
+import com.driverstack.devicemanager.activity.auth.ChangePasswordActivity;
 import com.driverstack.devicemanager.activity.auth.LoginActivity;
 import com.driverstack.devicemanager.activity.device.DeviceDetailActivity;
 import com.driverstack.devicemanager.activity.support.BaseActionBarActivity;
@@ -316,7 +317,15 @@ public class MainActivity extends BaseActionBarActivity {
 			newDevice.setName("new device");
 			startDeviceDetailAcitivity(newDevice);
 			break;
+		case R.id.action_change_password:
 
+			Intent i = new Intent(this, ChangePasswordActivity.class);
+
+			startActivity(i);
+
+			
+
+			break;
 		case R.id.action_logout:
 
 			logout();

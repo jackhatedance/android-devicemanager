@@ -61,7 +61,7 @@
                 android:orientation="vertical" >
 
                 <AutoCompleteTextView
-                    android:id="@+id/username"
+                    android:id="@+id/oldPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="username"
@@ -70,7 +70,7 @@
                     android:singleLine="true" />
 
                 <EditText
-                    android:id="@+id/password"
+                    android:id="@+id/newPassword1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="password"

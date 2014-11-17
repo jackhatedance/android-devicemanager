@@ -8,9 +8,11 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.driverstack.devicemanager.R;
+import com.driverstack.devicemanager.activity.MainActivity;
 import com.driverstack.devicemanager.activity.support.BaseActionBarActivity;
 import com.driverstack.devicemanager.activity.support.Constants;
 import com.driverstack.devicemanager.remoteservice.RemoteService;
@@ -19,8 +21,6 @@ import com.driverstack.yunos.remote.vo.FunctionalDevice;
 public class SwitchActivity extends BaseActionBarActivity {
 
 	private ToggleButton button1;
-
-	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -40,19 +40,31 @@ public class SwitchActivity extends BaseActionBarActivity {
 				final String operation = isChecked ? "on" : "off";
 				final Map<String, String> paramMap = new HashMap<String, String>();
 
-				new AsyncTask<Void, Void, Void>() {
+				new AsyncTask<Void, Void, Throwable>() {
 
 					@Override
-					protected Void doInBackground(Void... params) {
-						remoteService.operateDevice(Constants.APP_ID,
-								fd.getDeviceId(), fd.getIndex(), operation,
-								paramMap);
+					protected Throwable doInBackground(Void... params) {
+						try {
+							remoteService.operateDevice(Constants.APP_ID,
+									fd.getDeviceId(), fd.getIndex(), operation,
+									paramMap);
+						} catch (Exception e) {
+							return e;
+						}
 						return null;
 					}
 
 					@Override
-					protected void onPostExecute(Void result) {
-
+					protected void onPostExecute(Throwable result) {
+						if (result != null) {
+							Toast.makeText(getBaseContext(),
+									"error:" + result.getLocalizedMessage(),
+									Toast.LENGTH_SHORT).show();
+						} else {
+							Toast.makeText(getBaseContext(), "success.",
+									Toast.LENGTH_SHORT).show();
+						}
+						
 						super.onPostExecute(result);
 					}
 

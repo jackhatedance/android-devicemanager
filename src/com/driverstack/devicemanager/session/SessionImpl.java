@@ -52,4 +52,25 @@ public class SessionImpl implements Session {
 		editor.clear();
 		editor.commit();
 	}
+
+	@Override
+	public String getUsername() {
+
+		return getString(KEY_USERNAME);
+	}
+
+	@Override
+	public String getTokenKey() {
+		return getString(KEY_TOKEN_KEY);
+	}
+
+	@Override
+	public String getTokenSecret() {
+		return getString(KEY_TOKEN_SECRET);
+	}
+
+	@Override
+	public String getServerUrl() {
+		return getString(KEY_SERVER_URL);
+	}
 }

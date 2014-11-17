@@ -15,5 +15,10 @@ public interface Session {
 	String getString(String key);
 
 	void clear();
+	
+	String getUsername();
+	String getTokenKey();
+	String getTokenSecret();
+	String getServerUrl();
 
 }

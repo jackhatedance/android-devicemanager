@@ -25,7 +25,10 @@ public interface RemoteService {
 
 	@GET("/auth/destroyToken")
 	boolean destroyToken();
-
+	
+	@POST("/auth/changePassword")
+	boolean changePassword(@Query("newPassword") String newPassword);
+	
 	@GET("/users/{userId}")
 	User getUser(@Path("userId") String userId);
 

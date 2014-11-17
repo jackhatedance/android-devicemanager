@@ -15,11 +15,21 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        <activity android:name="com.driverstack.devicemanager.activity.SettingsActivity" android:label="@string/title_activity_settings">
-        </activity><activity android:name="com.driverstack.devicemanager.activity.auth.RegisterActivity" android:label="@string/title_activity_register">
-        </activity><activity android:name="com.driverstack.devicemanager.activity.auth.LoginActivity" android:label="@string/title_activity_login1">
+        <activity
+            android:name=".activity.SettingsActivity"
+            android:label="@string/title_activity_settings" >
+        </activity>
+        <activity
+            android:name=".activity.auth.RegisterActivity"
+            android:label="@string/title_activity_register" >
+        </activity>
+        <activity
+            android:name=".activity.auth.LoginActivity"
+            android:label="@string/title_activity_login1" >
+        </activity>
+        <activity android:name="com.driverstack.devicemanager.activity.auth.ChangePasswordActivity" android:label="@string/title_activity_change_password">
         </activity><activity
-            android:name="com.driverstack.devicemanager.activity.MainActivity"
+            android:name=".activity.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,16 +38,19 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.driverstack.devicemanager.activity.device.DeviceDetailActivity"
+            android:name=".activity.device.DeviceDetailActivity"
             android:label="@string/title_activity_device_detail" >
         </activity>
-        <activity android:name="com.driverstack.devicemanager.activity.device.DriverActivity" android:label="@string/title_activity_pick_driver">
-        </activity><activity
-            android:name="com.driverstack.devicemanager.activity.device.DeviceConfigurationActivity"
+        <activity
+            android:name=".activity.device.DriverActivity"
+            android:label="@string/title_activity_pick_driver" >
+        </activity>
+        <activity
+            android:name=".activity.device.DeviceConfigurationActivity"
             android:label="@string/title_activity_device_configuration" >
         </activity>
         <activity
-            android:name="com.driverstack.devicemanager.activity.operation.IrTransmitterActivity"
+            android:name=".activity.operation.IrTransmitterActivity"
             android:label="@string/title_activity_ir_transmitter" >
             <intent-filter>
                 <action android:name="com.driverstack.devicemanager.intent.action.OPERATE" />
@@ -48,7 +61,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.driverstack.devicemanager.activity.operation.SwitchActivity"
+            android:name=".activity.operation.SwitchActivity"
             android:label="@string/title_activity_switch" >
             <intent-filter>
                 <action android:name="com.driverstack.devicemanager.intent.action.OPERATE" />
@@ -60,17 +73,16 @@
             </intent-filter>
         </activity>
         
-        
-        
-        
     </application>
 
     <!--
      To retrieve OAuth 2.0 tokens or invalidate tokens to disconnect a user. This disconnect
-     option is required to comply with the Google+ Sign-In developer policies
+     option is required to comply with the Google+ Sign-In developer policies
     -->
 
+
     <!-- To retrieve the account name (email) as part of sign-in: -->
+
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
 

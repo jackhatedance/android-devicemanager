@@ -38,8 +38,8 @@ public class LoginActivity extends ActionBarActivity {
 
 		sessionManager = new SessionManager(this);
 
-		textViewUsername = (TextView) findViewById(R.id.username);
-		textViewPassword = (TextView) findViewById(R.id.password);
+		textViewUsername = (TextView) findViewById(R.id.oldPassword);
+		textViewPassword = (TextView) findViewById(R.id.newPassword1);
 		buttonLogin = (Button) findViewById(R.id.buttonLogin);
 
 		buttonLogin.setOnClickListener(new OnClickListener() {

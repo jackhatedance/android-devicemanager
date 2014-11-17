@@ -17,6 +17,7 @@ import android.content.Context;
 import com.driverstack.devicemanager.preference.Settings;
 import com.driverstack.devicemanager.session.Session;
 import com.driverstack.devicemanager.session.SessionManager;
+import com.driverstack.yunos.remote.exception.RestApiError;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -95,10 +96,17 @@ public class RemoteServiceFactory {
 			@Override
 			public Throwable handleError(RetrofitError error) {
 
-				Response r = error.getResponse();
-				if (r != null && r.getStatus() == 401) {
+				Response response = error.getResponse();
+
+				if (response != null && response.getStatus() == 401) {
 					return new UnauthorizedException(error);
+				} else if (response != null && response.getStatus() == 500) {
+					RestApiError body = (RestApiError) error
+							.getBodyAs(RestApiError.class);
+
+					return new RuntimeException(body.getMessage());
 				}
+
 				return error;
 			}
 		});
