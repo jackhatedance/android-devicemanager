@@ -69,8 +69,7 @@ public class DeviceDetailActivity extends BaseActionBarActivity {
 	private DropdownList<FunctionalDevice> functionalDeviceDropdownList = null;
 
 	private String oldDriverId;
-	private String currentDriverId;
-
+	
 	List<Vendor> vendors = null;
 	List<DeviceClass> deviceClasses = null;
 	List<Model> models = null;
@@ -223,10 +222,11 @@ public class DeviceDetailActivity extends BaseActionBarActivity {
 
 						@Override
 						protected Void doInBackground(Void... params) {
-							if (device.getDriverId().equals(selDriverId)) {
+							if (oldDriverId!=null &&  !isDriverChanged()){	
 								deviceConfigurationitems = remoteService
 										.getDeviceConfiguration(device.getId());
 							} else {
+								//assume current driver is not null.
 								deviceConfigurationitems = remoteService
 										.getDeviceInitialConfiguration(
 												device.getId(), selDriverId);
@@ -624,7 +624,7 @@ public class DeviceDetailActivity extends BaseActionBarActivity {
 	}
 
 	private boolean isDriverChanged() {
-		return !oldDriverId.equals(device.getDriverId());
+		return oldDriverId!=null && !oldDriverId.equals(device.getDriverId());
 	}
 
 	private void updateView() {
