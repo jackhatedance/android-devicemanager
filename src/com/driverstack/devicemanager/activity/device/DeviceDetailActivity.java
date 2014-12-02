@@ -69,7 +69,7 @@ public class DeviceDetailActivity extends BaseActionBarActivity {
 	private DropdownList<FunctionalDevice> functionalDeviceDropdownList = null;
 
 	private String oldDriverId;
-	
+
 	List<Vendor> vendors = null;
 	List<DeviceClass> deviceClasses = null;
 	List<Model> models = null;
@@ -195,6 +195,9 @@ public class DeviceDetailActivity extends BaseActionBarActivity {
 							View view, int position, long id) {
 						device.setDriverId(driverDropdownList
 								.getSelectedObjectId());
+						// clear local config items
+						deviceConfigurationitems = null;
+
 						refreshFunctionalDeviceDropdownList();
 					}
 
@@ -222,15 +225,14 @@ public class DeviceDetailActivity extends BaseActionBarActivity {
 
 						@Override
 						protected Void doInBackground(Void... params) {
-							if (oldDriverId!=null &&  !isDriverChanged()){	
-								deviceConfigurationitems = remoteService
-										.getDeviceConfiguration(device.getId());
-							} else {
-								//assume current driver is not null.
-								deviceConfigurationitems = remoteService
-										.getDeviceInitialConfiguration(
-												device.getId(), selDriverId);
-							}
+
+							// save first
+							updateModel();
+							saveDeviceAndConfigItems();
+
+							deviceConfigurationitems = remoteService
+									.getDeviceConfiguration(device.getId());
+
 							return null;
 						}
 
@@ -335,7 +337,7 @@ public class DeviceDetailActivity extends BaseActionBarActivity {
 				@Override
 				protected Exception doInBackground(Void... params) {
 					try {
-						saveModel();
+						saveDeviceAndConfigItems();
 						return null;
 					} catch (Exception e) {
 						return e;
@@ -624,7 +626,9 @@ public class DeviceDetailActivity extends BaseActionBarActivity {
 	}
 
 	private boolean isDriverChanged() {
-		return oldDriverId!=null && !oldDriverId.equals(device.getDriverId());
+		return (oldDriverId == null && device.getDriverId() != null)
+				|| (oldDriverId != null && !oldDriverId.equals(device
+						.getDriverId()));
 	}
 
 	private void updateView() {
@@ -642,11 +646,28 @@ public class DeviceDetailActivity extends BaseActionBarActivity {
 
 	}
 
-	private void saveModel() {
+	private void saveDeviceAndConfigItems() {
 		if (device.getId() != null) {
 			remoteService.updateDevice(device);
+
+			if (device.getDriverId() != null && isDriverChanged()
+					&& deviceConfigurationitems == null) {
+				deviceConfigurationitems = remoteService
+						.getDeviceInitialConfiguration(device.getId(),
+								device.getDriverId());
+			}
+
 		} else {
-			remoteService.addDevice(Constants.USER_ID, device);
+			String deviceId = remoteService
+					.addDevice(Constants.USER_ID, device);
+			device.setId(deviceId);
+
+			if (deviceConfigurationitems == null) {
+				deviceConfigurationitems = remoteService
+						.getDeviceInitialConfiguration(device.getId(),
+								device.getDriverId());
+			}
+
 		}
 
 		if (deviceConfigurationitems != null) {
@@ -654,5 +675,7 @@ public class DeviceDetailActivity extends BaseActionBarActivity {
 					deviceConfigurationitems);
 			remoteService.reloadDriver(device.getId());
 		}
+
+		oldDriverId = device.getDriverId();
 	}
 }

@@ -25,16 +25,15 @@ public interface RemoteService {
 
 	@GET("/auth/destroyToken")
 	boolean destroyToken();
-	
+
 	@POST("/auth/changePassword")
 	boolean changePassword(@Query("newPassword") String newPassword);
-	
+
 	@GET("/users/{userId}")
 	User getUser(@Path("userId") String userId);
 
 	@POST("/devices")
-	List<com.driverstack.yunos.remote.vo.Device> addDevice(
-			@Query("userId") String userId, @Body Device device);
+	String addDevice(@Query("userId") String userId, @Body Device device);
 
 	@GET("/devices")
 	List<com.driverstack.yunos.remote.vo.Device> getUserDevices(
