@@ -286,12 +286,30 @@ public class MainActivity extends BaseActionBarActivity {
 
 		if (requestCode == REQUEST_DEVICE_DETAIL) {
 			if (resultCode == RESULT_OK) {
-				devices = remoteService.getUserDevices(userId);
-
-				updateDeviceListView();
+				refreshUI();
 			}
 		}
 
+	}
+
+	private void refreshUI() {
+		new AsyncTask<Void, Void, Void>() {
+
+			@Override
+			protected Void doInBackground(Void... params) {
+
+				devices = remoteService.getUserDevices(userId);
+				return null;
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				super.onPostExecute(result);
+
+				updateDeviceListView();
+			}
+
+		}.execute();
 	}
 
 	@Override
@@ -322,8 +340,6 @@ public class MainActivity extends BaseActionBarActivity {
 			Intent i = new Intent(this, ChangePasswordActivity.class);
 
 			startActivity(i);
-
-			
 
 			break;
 		case R.id.action_logout:
