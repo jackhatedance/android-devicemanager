@@ -236,9 +236,8 @@ public class MainActivity extends BaseActionBarActivity {
 								@Override
 								public void onClick(DialogInterface dialog,
 										int which) {
-									remoteService.deleteDevice(device.getId());
-									devices.remove(device);
-									updateDeviceListView();
+
+									removeDevice(device);
 								}
 
 							}).setNegativeButton("No", null).show();
@@ -290,26 +289,6 @@ public class MainActivity extends BaseActionBarActivity {
 			}
 		}
 
-	}
-
-	private void refreshUI() {
-		new AsyncTask<Void, Void, Void>() {
-
-			@Override
-			protected Void doInBackground(Void... params) {
-
-				devices = remoteService.getUserDevices(userId);
-				return null;
-			}
-
-			@Override
-			protected void onPostExecute(Void result) {
-				super.onPostExecute(result);
-
-				updateDeviceListView();
-			}
-
-		}.execute();
 	}
 
 	@Override
@@ -384,6 +363,49 @@ public class MainActivity extends BaseActionBarActivity {
 				sessionManager.destroySession();
 				startLoginActivity();
 
+			}
+
+		}.execute();
+	}
+
+	private void removeDevice(final Device device) {
+		new AsyncTask<Void, Void, Void>() {
+
+			@Override
+			protected Void doInBackground(Void... params) {
+
+				remoteService.deleteDevice(device.getId());
+
+				return null;
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				super.onPostExecute(result);
+
+				devices.remove(device);
+				updateDeviceListView();
+
+			}
+
+		}.execute();
+	}
+
+	private void refreshUI() {
+		new AsyncTask<Void, Void, Void>() {
+
+			@Override
+			protected Void doInBackground(Void... params) {
+
+				devices = remoteService.getUserDevices(userId);
+				return null;
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				super.onPostExecute(result);
+
+				updateDeviceListView();
 			}
 
 		}.execute();
