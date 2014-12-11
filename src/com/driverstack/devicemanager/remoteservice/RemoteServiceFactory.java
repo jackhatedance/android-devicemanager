@@ -1,6 +1,7 @@
 package com.driverstack.devicemanager.remoteservice;
 
 import java.util.Date;
+import java.util.Map;
 
 import org.apache.http.Header;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -24,26 +25,43 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.internal.bind.DateTypeAdapter;
 
 public class RemoteServiceFactory {
-	// private static final String urlApi =
-	// "http://www.driverstack.com:8080/yunos/api/1.0/";
-	// private static final String urlApi =
-	// "http://api.dev.driverstack.com/api/1.0/";
-	// private static final String DEFAULT_URL =
-	// "http://win7dev:8080/web/api/1.0/";
 
+	/**
+	 * for API that require authentication
+	 * 
+	 * @param url
+	 * @param username
+	 * @param password
+	 * @param service
+	 * @return
+	 */
 	public static RemoteService getRemoteService(String url, String username,
 			String password) {
-		RemoteService remoteService = createRemoteService(url, username,
-				password);
-		return remoteService;
+		return createRemoteService(url, username, password,
+				RemoteService.class, null, null);
+
 	}
 
+	/**
+	 * for API that before login, such register.
+	 * 
+	 * @param url
+	 * @param service
+	 * @return
+	 */
 	public static RemoteService getRemoteService(String url) {
-		RemoteService remoteService = createRemoteService(url, null, null);
-		return remoteService;
+		return createRemoteService(url, null, null, RemoteService.class, null,
+				null);
+
 	}
 
 	public static RemoteService getRemoteService(Context context) {
+		return getRemoteService(context, RemoteService.class, null, null);
+	}
+
+	public static <T> T getRemoteService(Context context, Class<T> service,
+			Map<String, String> pathParameters,
+			Map<String, String> queryParameters) {
 		SessionManager sessionManager = new SessionManager(context);
 		Session session = sessionManager.getSession();
 
@@ -53,18 +71,31 @@ public class RemoteServiceFactory {
 
 			String url = session.getString(Session.KEY_SERVER_URL);
 
-			RemoteService remoteService = createRemoteService(url, key, secret);
-			return remoteService;
+			return createRemoteService(url, key, secret, service,
+					pathParameters, queryParameters);
+
 		} else {
 			Settings settings = new Settings(context);
 			String url = settings.getEffectiveServerUrl();
-			return getRemoteService(url);
+			return createRemoteService(url, null, null, service, null, null);
 		}
 
 	}
 
-	private static RemoteService createRemoteService(String url,
-			String username, String password) {
+	private static <T> T createRemoteService(String url, String username,
+			String password, Class<T> service,
+			Map<String, String> pathParameters,
+			Map<String, String> queryParameters) {
+
+		RestAdapter restAdapter = createRestAdapter(url, username, password,
+				pathParameters, queryParameters);
+
+		return restAdapter.create(service);
+	}
+
+	private static RestAdapter createRestAdapter(String url, String username,
+			String password, final Map<String, String> pathParameters,
+			final Map<String, String> queryParameters) {
 
 		Gson gson = new GsonBuilder()
 				.setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
@@ -86,6 +117,20 @@ public class RemoteServiceFactory {
 					requestFacade.addHeader(baseAuth.getName(),
 							baseAuth.getValue());
 
+					// append url parameters
+					if (pathParameters != null) {
+						for (String name : pathParameters.keySet()) {
+							String value = pathParameters.get(name);
+							requestFacade.addPathParam(name, value);
+						}
+					}
+
+					if (queryParameters != null) {
+						for (String name : queryParameters.keySet()) {
+							String value = queryParameters.get(name);
+							requestFacade.addQueryParam(name, value);
+						}
+					}
 				}
 			};
 			builder.setRequestInterceptor(AuthIntercepter);
@@ -106,7 +151,7 @@ public class RemoteServiceFactory {
 					try {
 						body = (RemoteError) error.getBodyAs(RemoteError.class);
 					} catch (Exception e) {
-						
+
 						body = new RemoteError("ServerError", "ServerError",
 								"server error", "server error");
 					}
@@ -122,8 +167,7 @@ public class RemoteServiceFactory {
 
 		RestAdapter restAdapter = builder.build();
 
-		RemoteService service = restAdapter.create(RemoteService.class);
-
-		return service;
+		return restAdapter;
 	}
+
 }
