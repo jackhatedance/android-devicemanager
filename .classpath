@@ -18,5 +18,6 @@
 	<classpathentry kind="lib" path="libs/retrofit-1.6.1.jar"/>
 	<classpathentry kind="lib" path="libs/remote-api-0.1.jar"/>
 	<classpathentry kind="lib" path="libs/driver-api-0.1.jar"/>
+	<classpathentry kind="lib" path="libs/common-0.1.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
